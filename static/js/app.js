@@ -76,9 +76,8 @@ const I18N = {
     "form.message_placeholder": "Describe tu proyecto o consulta con el mayor detalle posible...",
     "form.message_error": "Por favor describe tu consulta o pedido.",
     "form.submit": "Enviar Solicitud",
-    "form.success_title": "¡Solicitud enviada!",
-    "form.success_text": "Nos pondremos en contacto contigo pronto.",
-    "form.error_global": "Ocurrió un error al enviar. Intenta de nuevo más tarde.",
+    "form.success_title": "Mensaje enviado",
+    "form.error_global": "Error",
 
     "footer.tagline": "Ingeniería digital y diseño sin atajos.",
     "footer.nav_title": "Navegación",
@@ -153,9 +152,8 @@ const I18N = {
     "form.message_placeholder": "Describe your project or inquiry in as much detail as possible...",
     "form.message_error": "Please describe your inquiry or request.",
     "form.submit": "Send Request",
-    "form.success_title": "Request sent!",
-    "form.success_text": "We'll get in touch with you soon.",
-    "form.error_global": "An error occurred while sending. Please try again later.",
+    "form.success_title": "Message sent",
+    "form.error_global": "Error",
 
     "footer.tagline": "Digital engineering and design, no shortcuts.",
     "footer.nav_title": "Navigation",
@@ -230,9 +228,8 @@ const I18N = {
     "form.message_placeholder": "Descreva seu projeto ou consulta com o máximo de detalhes possível...",
     "form.message_error": "Por favor, descreva sua consulta ou pedido.",
     "form.submit": "Enviar Solicitação",
-    "form.success_title": "Solicitação enviada!",
-    "form.success_text": "Entraremos em contato com você em breve.",
-    "form.error_global": "Ocorreu um erro ao enviar. Tente novamente mais tarde.",
+    "form.success_title": "Mensagem enviada",
+    "form.error_global": "Erro",
 
     "footer.tagline": "Engenharia digital e design sem atalhos.",
     "footer.nav_title": "Navegação",
@@ -307,9 +304,8 @@ const I18N = {
     "form.message_placeholder": "Décrivez votre projet ou demande avec le plus de détails possible...",
     "form.message_error": "Veuillez décrire votre demande.",
     "form.submit": "Envoyer la Demande",
-    "form.success_title": "Demande envoyée !",
-    "form.success_text": "Nous vous contacterons bientôt.",
-    "form.error_global": "Une erreur s'est produite lors de l'envoi. Veuillez réessayer plus tard.",
+    "form.success_title": "Message envoyé",
+    "form.error_global": "Erreur",
 
     "footer.tagline": "Ingénierie digitale et design sans raccourcis.",
     "footer.nav_title": "Navigation",
@@ -747,8 +743,8 @@ function initContactForm() {
     e.preventDefault();
 
     // Reset feedback
-    formSuccess.hidden = true;
-    formErrGlobal.hidden = true;
+    formSuccess.classList.remove('show');
+    formErrGlobal.classList.remove('show');
 
     // Validate
     let isValid = true;
@@ -782,17 +778,54 @@ function initContactForm() {
 
       if (data.success) {
         form.reset();
-        formSuccess.hidden = false;
-        formSuccess.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        showNotification(formSuccess, 'success');
       } else {
-        formErrGlobal.hidden = false;
+        showNotification(formErrGlobal, 'error');
       }
     } catch {
-      formErrGlobal.hidden = false;
+      showNotification(formErrGlobal, 'error');
     } finally {
       setLoading(false);
     }
   });
+
+  function showNotification(el, type) {
+    el.classList.add('show');
+    playNotificationSound(type);
+    setTimeout(() => {
+      el.classList.remove('show');
+    }, 3000);
+  }
+
+  function playNotificationSound(type) {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      if (type === 'success') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1046.50, ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.05, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.4);
+      } else {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(300, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.05, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.4);
+      }
+    } catch (e) {
+      console.log('Audio not supported or blocked');
+    }
+  }
 
   function setLoading(loading) {
     submitBtn.disabled = loading;

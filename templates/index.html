@@ -315,7 +315,6 @@
         </p>
 
         <div class="contact-notice" role="note">
-          <span class="notice-icon" aria-hidden="true">⚠️</span>
           <div class="notice-content">
             <strong data-i18n="contact.notice_title">Verificación de Identidad</strong>
             <p data-i18n="contact.notice_text">
@@ -325,7 +324,6 @@
         </div>
 
         <div class="contact-notice contact-notice--security" role="note">
-          <span class="notice-icon" aria-hidden="true">🔒</span>
           <div class="notice-content">
             <strong data-i18n="contact.security_title">Seguridad</strong>
             <p data-i18n="contact.security_text">
@@ -382,18 +380,13 @@
           </button>
 
           <!-- Success -->
-          <div class="form-feedback form-success" id="form-success" role="status" aria-live="polite" hidden>
-            <span class="feedback-icon" aria-hidden="true">✓</span>
-            <div>
-              <strong data-i18n="form.success_title">¡Solicitud enviada!</strong>
-              <p data-i18n="form.success_text">Nos pondremos en contacto contigo pronto.</p>
-            </div>
+          <div class="form-feedback form-success" id="form-success" role="status" aria-live="polite">
+            <span data-i18n="form.success_title">Mensaje enviado</span>
           </div>
 
           <!-- Error -->
-          <div class="form-feedback form-error-global" id="form-error-global" role="alert" aria-live="polite" hidden>
-            <span class="feedback-icon" aria-hidden="true">⚠</span>
-            <p data-i18n="form.error_global">Ocurrió un error al enviar. Intenta de nuevo más tarde.</p>
+          <div class="form-feedback form-error-global" id="form-error-global" role="alert" aria-live="polite">
+            <span data-i18n="form.error_global">Error</span>
           </div>
 
         </form>
