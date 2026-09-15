@@ -513,7 +513,10 @@ function applyLang(lang, isInit = false) {
   // Update selector UI
   const meta = LANG_META[lang];
   document.getElementById('current-flag').textContent = meta.flag;
-  document.getElementById('current-lang-code').textContent = meta.code;
+  const langBtn = document.getElementById('lang-btn');
+  const langCode = document.getElementById('current-lang-code');
+  if (langCode) langCode.textContent = meta.code;
+  if (langBtn) langBtn.setAttribute('aria-label', `Idioma actual: ${meta.code}. Seleccionar idioma`);
 
   // Mark active option
   document.querySelectorAll('.lang-option').forEach(opt => {
