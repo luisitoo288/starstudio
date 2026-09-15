@@ -403,10 +403,10 @@ const TERMS = {
    LANGUAGE META
    ──────────────────────────────────────────────────────────────── */
 const LANG_META = {
-  es: { flag: '🇪🇸', code: 'ES' },
-  en: { flag: '🇬🇧', code: 'EN' },
-  pt: { flag: '🇧🇷', code: 'PT' },
-  fr: { flag: '🇫🇷', code: 'FR' },
+  es: { flag: 'ES', code: 'ES' },
+  en: { flag: 'EN', code: 'EN' },
+  pt: { flag: 'PT', code: 'PT' },
+  fr: { flag: 'FR', code: 'FR' },
 };
 
 /* ────────────────────────────────────────────────────────────────

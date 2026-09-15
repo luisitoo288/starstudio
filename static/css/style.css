@@ -378,7 +378,18 @@ ul { list-style: none; }
 }
 .lang-btn:hover { background: var(--accent-sub-h); color: var(--text-1); }
 
-.lang-flag { font-size: 1rem; line-height: 1; }
+.lang-flag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  transform: translateY(1px);
+}
 
 .lang-dropdown {
   position: absolute;
