@@ -957,6 +957,41 @@ ul { list-style: none; }
   overflow-x: hidden;
 }
 
+/* ── GLOBAL DECORATIVE BACKGROUND ────────────────────────────────
+   A fixed, non-interactive layer adds depth without affecting layout,
+   readability, scrolling, or pointer interactions. */
+.page-rays {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    repeating-conic-gradient(
+      from 220deg at 12% 16%,
+      transparent 0deg 10deg,
+      rgba(255, 255, 255, 0.026) 10deg 11deg,
+      transparent 11deg 20deg
+    );
+  mask-image: radial-gradient(ellipse 115% 90% at 12% 16%, black 0%, transparent 76%);
+  -webkit-mask-image: radial-gradient(ellipse 115% 90% at 12% 16%, black 0%, transparent 76%);
+}
+
+/* Keep every page section above the visual-only rays. */
+body > :not(.page-rays) {
+  position: relative;
+  z-index: 1;
+}
+
+[data-theme="light"] .page-rays {
+  background:
+    repeating-conic-gradient(
+      from 220deg at 12% 16%,
+      transparent 0deg 10deg,
+      rgba(38, 53, 69, 0.04) 10deg 11deg,
+      transparent 11deg 20deg
+    );
+}
+
 .contact-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
