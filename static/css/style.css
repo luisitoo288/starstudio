@@ -574,22 +574,96 @@ ul { list-style: none; }
 /* Rubik's cube container */
 .hero-visual {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  gap: var(--spacing-16);
 }
 
 .rubik-wrap {
   position: relative;
-  width: 420px; height: 420px;
+  width: 420px;
+  height: 420px;
+  max-width: 100%;
 }
 
 #rubik-canvas {
-  width: 100%; height: 100%;
+  width: 100%;
+  height: 100%;
   display: block;
   cursor: grab;
+  touch-action: none;
   border-radius: var(--r-lg);
 }
 #rubik-canvas:active { cursor: grabbing; }
+
+.rubik-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border);
+  background: rgba(10, 14, 26, 0.45);
+  backdrop-filter: blur(8px);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+  user-select: none;
+}
+.rubik-hint span {
+  color: var(--accent);
+}
+
+.rubik-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  max-width: 420px;
+  z-index: 5;
+}
+
+.rubik-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(15, 18, 25, 0.7);
+  padding: 4px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(6px);
+}
+
+.rubik-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--t-fast);
+  user-select: none;
+}
+.rubik-btn:hover {
+  background: rgba(146, 129, 247, 0.18);
+  border-color: var(--accent);
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(146, 129, 247, 0.3);
+}
+.rubik-btn:active {
+  transform: scale(0.94);
+}
+.rubik-btn-action {
+  font-family: var(--font);
+  font-size: 0.75rem;
+  padding: 5px 12px;
+}
 
 /* Legacy star-wrap — hidden when rubik is present */
 .hero-star-wrap { display: none; }
