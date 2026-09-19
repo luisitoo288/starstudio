@@ -4,448 +4,638 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Star Studio's — Ingeniería digital y diseño sin atajos. Páginas web a medida, bots de Discord de alto rendimiento y diseño gráfico profesional." />
-  <meta name="theme-color" content="#050814" />
+  <meta name="theme-color" content="#000000" />
   <title>Star Studio's — Ingeniería Digital &amp; Diseño</title>
 
-  <!-- Fonts -->
+  <!-- Fonts — Inter (body/UI) + Playfair Display (hero serif) + JetBrains Mono (code) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet" />
 
   <!-- Styles -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 </head>
 <body>
 
-<!-- ╔══════════════════════════════════════════════════════╗ -->
-<!-- ║                      NAVBAR                         ║ -->
-<!-- ╚══════════════════════════════════════════════════════╝ -->
-<nav class="navbar" id="navbar" role="navigation" aria-label="Navegación principal">
-  <div class="nav-container">
+  <!-- ╔══════════════════════════════════════════════════════╗ -->
+  <!-- ║                      NAVBAR                         ║ -->
+  <!-- ╚══════════════════════════════════════════════════════╝ -->
+  <nav class="navbar" id="navbar" role="navigation" aria-label="Navegación principal">
+    <div class="nav-container">
 
-    <!-- Logo -->
-    <a href="#hero" class="nav-logo" aria-label="Star Studio's — Inicio">
-      <img src="{{ url_for('static', filename='images/logo.png') }}"
-           alt="Star Studio's" class="logo dark-logo" draggable="false" oncontextmenu="return false;" />
-      <img src="{{ url_for('static', filename='images/logo2.png') }}"
-           alt="Star Studio's" class="logo light-logo" draggable="false" oncontextmenu="return false;" />
-    </a>
+      <!-- Logo -->
+      <a href="#hero" class="nav-logo" aria-label="Star Studio's — Inicio">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Star Studio's" class="logo dark-logo"
+          draggable="false" oncontextmenu="return false;" />
+        <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="Star Studio's" class="logo light-logo"
+          draggable="false" oncontextmenu="return false;" />
+      </a>
 
-    <!-- Desktop links -->
-    <ul class="nav-links" id="nav-links" role="list">
-      <li><a href="#hero"         data-i18n="nav.home">Inicio</a></li>
-      <li><a href="#portfolio"    data-i18n="nav.portfolio">Productos</a></li>
-      <li><a href="#testimonials" data-i18n="nav.testimonials">Clientes</a></li>
-      <li><a href="#terms"        data-i18n="nav.terms">Términos</a></li>
-      <li><a href="#contact"      data-i18n="nav.contact">Contacto</a></li>
-    </ul>
+      <!-- Desktop links -->
+      <ul class="nav-links" id="nav-links" role="list">
+        <li><a href="#hero"         data-i18n="nav.home">Inicio</a></li>
+        <li><a href="#portfolio"    data-i18n="nav.portfolio">Productos</a></li>
+        <li><a href="#testimonials" data-i18n="nav.testimonials">Clientes</a></li>
+        <li><a href="#terms"        data-i18n="nav.terms">Términos</a></li>
+        <li><a href="#contact"      data-i18n="nav.contact">Contacto</a></li>
+      </ul>
 
-    <!-- Actions -->
-    <div class="nav-actions">
+      <!-- Actions -->
+      <div class="nav-actions">
 
-      <!-- Language selector -->
-      <div class="lang-selector" id="lang-selector">
-        <button class="lang-btn" id="lang-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="Seleccionar idioma">
-          <span class="lang-flag" id="current-flag" aria-hidden="true">🇪🇸</span>
-          <span class="lang-code" id="current-lang-code">ES</span>
-          <svg class="lang-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-            <polyline points="6 9 12 15 18 9"></polyline>
+        <!-- Language selector -->
+        <div class="lang-selector" id="lang-selector">
+          <button class="lang-btn" id="lang-btn" aria-haspopup="listbox" aria-expanded="false"
+            aria-label="Seleccionar idioma">
+            <span class="lang-flag" id="current-flag" aria-hidden="true">🇪🇸</span>
+            <span class="lang-code" id="current-lang-code">ES</span>
+            <svg class="lang-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              aria-hidden="true">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="lang-dropdown" id="lang-dropdown" role="listbox">
+            <button class="lang-option" data-lang="es" role="option">🇪🇸 Español</button>
+            <button class="lang-option" data-lang="en" role="option">🇬🇧 English</button>
+            <button class="lang-option" data-lang="pt" role="option">🇧🇷 Português</button>
+            <button class="lang-option" data-lang="fr" role="option">🇫🇷 Français</button>
+          </div>
+        </div>
+
+        <!-- Theme toggle -->
+        <button class="theme-toggle" id="theme-toggle" aria-label="Alternar tema">
+          <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            aria-hidden="true">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg>
         </button>
-        <div class="lang-dropdown" id="lang-dropdown" role="listbox">
-          <button class="lang-option" data-lang="es" role="option">🇪🇸 Español</button>
-          <button class="lang-option" data-lang="en" role="option">🇬🇧 English</button>
-          <button class="lang-option" data-lang="pt" role="option">🇧🇷 Português</button>
-          <button class="lang-option" data-lang="fr" role="option">🇫🇷 Français</button>
-        </div>
+
+        <!-- Hamburger (mobile) -->
+        <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+
       </div>
-
-      <!-- Theme toggle -->
-      <button class="theme-toggle" id="theme-toggle" aria-label="Alternar tema">
-        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <circle cx="12" cy="12" r="5"></circle>
-          <line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line>
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-          <line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line>
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-        </svg>
-        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
-      </button>
-
-      <!-- Hamburger -->
-      <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
-
     </div>
-  </div>
-</nav>
+  </nav>
 
 
-<!-- ╔══════════════════════════════════════════════════════╗ -->
-<!-- ║                    HERO SECTION                     ║ -->
-<!-- ╚══════════════════════════════════════════════════════╝ -->
-<section class="hero" id="hero" aria-label="Presentación">
-  <div class="hero-grid-bg" aria-hidden="true"></div>
-  <div class="hero-glow-orb" aria-hidden="true"></div>
+  <!-- ╔══════════════════════════════════════════════════════╗ -->
+  <!-- ║                    HERO SECTION                     ║ -->
+  <!-- ╚══════════════════════════════════════════════════════╝ -->
+  <section class="hero" id="hero" aria-label="Presentación">
+    <div class="hero-grid-bg" aria-hidden="true"></div>
+    <div class="hero-glow-orb"  aria-hidden="true"></div>
 
-  <div class="hero-inner">
-    <!-- Copy -->
-    <div class="hero-copy reveal">
-      <div class="hero-badge" aria-label="Tipo de empresa">
-        <span class="badge-dot" aria-hidden="true"></span>
-        <span data-i18n="hero.badge">Estudio Digital</span>
+    <div class="hero-inner">
+      <!-- Copy -->
+      <div class="hero-copy reveal">
+        <!-- Announcement pill -->
+        <div class="hero-badge" aria-label="Tipo de empresa">
+          <span class="badge-dot" aria-hidden="true"></span>
+          <span data-i18n="hero.badge">Estudio Digital</span>
+        </div>
+
+        <!-- Display headline — Playfair Display for editorial impact -->
+        <h1 class="hero-title" data-i18n="hero.title">Ingeniería digital<br>y diseño sin atajos.</h1>
+
+        <!-- Body lead -->
+        <p class="hero-subtitle" data-i18n="hero.subtitle">
+          Construimos páginas web a medida, bots de Discord de alto rendimiento y piezas de diseño que comunican con
+          precisión. Sin templates. Sin compromisos.
+        </p>
+
+        <!-- Service tags — monospace code style -->
+        <div class="hero-services" role="list" aria-label="Servicios">
+          <div class="service-pill" role="listitem">
+            <svg class="service-icon-svg" viewBox="0 0 8 8" fill="currentColor" aria-hidden="true"><circle cx="4" cy="4" r="4"/></svg>
+            <span data-i18n="hero.service1">Páginas Web</span>
+          </div>
+          <div class="service-pill" role="listitem">
+            <svg class="service-icon-svg" viewBox="0 0 8 8" fill="currentColor" aria-hidden="true"><circle cx="4" cy="4" r="4"/></svg>
+            <span data-i18n="hero.service2">Bots de Discord</span>
+          </div>
+          <div class="service-pill" role="listitem">
+            <svg class="service-icon-svg" viewBox="0 0 8 8" fill="currentColor" aria-hidden="true"><circle cx="4" cy="4" r="4"/></svg>
+            <span data-i18n="hero.service3">Diseño Gráfico</span>
+          </div>
+        </div>
       </div>
 
-      <h1 class="hero-title" data-i18n="hero.title">Ingeniería digital<br>y diseño sin atajos.</h1>
-
-      <p class="hero-subtitle" data-i18n="hero.subtitle">
-        Construimos páginas web a medida, bots de Discord de alto rendimiento y piezas de diseño que comunican con precisión. Sin templates. Sin compromisos.
-      </p>
-
-      <div class="hero-services" role="list" aria-label="Servicios">
-        <div class="service-pill" role="listitem">
-          <svg class="service-icon-svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="8" cy="8" r="3"/></svg>
-          <span data-i18n="hero.service1">Páginas Web</span>
-        </div>
-        <div class="service-pill" role="listitem">
-          <svg class="service-icon-svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="8" cy="8" r="3"/></svg>
-          <span data-i18n="hero.service2">Bots de Discord</span>
-        </div>
-        <div class="service-pill" role="listitem">
-          <svg class="service-icon-svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="8" cy="8" r="3"/></svg>
-          <span data-i18n="hero.service3">Diseño Gráfico</span>
+      <!-- Visual — Interactive Rubik's Cube (Three.js WebGL) -->
+      <div class="hero-visual reveal" aria-label="Cubo Rubik interactivo">
+        <div class="rubik-wrap">
+          <canvas id="rubik-canvas" aria-label="Cubo Rubik 3D interactivo — arrastra para girar"></canvas>
         </div>
       </div>
     </div>
 
-    <!-- Visual -->
-    <div class="hero-visual reveal" aria-hidden="true">
-      <div class="hero-star-wrap">
-        <div class="star-ring star-ring--1"></div>
-        <div class="star-ring star-ring--2"></div>
-        <img src="{{ url_for('static', filename='images/logo.png') }}"
-             alt="" class="hero-star dark-logo" draggable="false" oncontextmenu="return false;" />
-        <img src="{{ url_for('static', filename='images/logo2.png') }}"
-             alt="" class="hero-star light-logo" draggable="false" oncontextmenu="return false;" />
+    <!-- Scroll cue -->
+    <a href="#portfolio" class="scroll-cue" aria-label="Ir a Productos">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M12 5v14M5 12l7 7 7-7"/>
+      </svg>
+    </a>
+  </section>
+
+
+  <!-- ╔══════════════════════════════════════════════════════╗ -->
+  <!-- ║                PORTFOLIO SECTION                    ║ -->
+  <!-- ╚══════════════════════════════════════════════════════╝ -->
+  <section class="portfolio section-alt" id="portfolio" aria-label="Productos">
+    <div class="container">
+      <header class="section-header reveal">
+        <span class="section-label" data-i18n="portfolio.label">Nuestros Productos</span>
+        <h2 class="section-title" data-i18n="portfolio.title">Productos</h2>
+        <p class="section-desc" data-i18n="portfolio.desc">
+          Productos seleccionados que demuestran nuestra precisión técnica y criterio estético.
+        </p>
+      </header>
+
+      <div class="portfolio-grid" id="portfolio-grid">
+
+        <article class="portfolio-card reveal">
+          <div class="portfolio-img-wrap">
+            <img src="{{ url_for('static', filename='images/productos/web/web.png') }}" alt="Proyecto Web Premium"
+              class="portfolio-img" id="web-product-img" draggable="false" oncontextmenu="return false;"
+              loading="lazy" onerror="this.closest('.portfolio-img-wrap').classList.add('no-img')" />
+            <div class="portfolio-overlay">
+              <span class="portfolio-tag" data-i18n="portfolio.tag_web">Página Web</span>
+            </div>
+          </div>
+          <div class="portfolio-info">
+            <h3 data-i18n="portfolio.p1_title">Proyecto Web Premium</h3>
+            <p data-i18n="portfolio.p1_desc">Sitio corporativo con diseño a medida y CMS personalizado.</p>
+          </div>
+        </article>
+
+        <article class="portfolio-card reveal">
+          <div class="portfolio-img-wrap">
+            <img src="{{ url_for('static', filename='images/productos/bot/botall.png') }}" alt="Bot de Moderación"
+              class="portfolio-img" id="bot-product-img" draggable="false" oncontextmenu="return false;"
+              loading="lazy" onerror="this.closest('.portfolio-img-wrap').classList.add('no-img')" />
+            <div class="portfolio-overlay">
+              <span class="portfolio-tag" data-i18n="portfolio.tag_bot">Bot Discord</span>
+            </div>
+          </div>
+          <div class="portfolio-info">
+            <h3 data-i18n="portfolio.p2_title">Bot de Moderación</h3>
+            <p data-i18n="portfolio.p2_desc">Sistema automatizado con panel de control y logs avanzados.</p>
+          </div>
+        </article>
+
+        <article class="portfolio-card reveal">
+          <div class="portfolio-img-wrap">
+            <img src="{{ url_for('static', filename='images/productos/grafico/designes.png') }}" alt="Identidad Visual"
+              class="portfolio-img" id="design-product-img" draggable="false" oncontextmenu="return false;"
+              loading="lazy" onerror="this.closest('.portfolio-img-wrap').classList.add('no-img')" />
+            <div class="portfolio-overlay">
+              <span class="portfolio-tag" data-i18n="portfolio.tag_design">Diseño</span>
+            </div>
+          </div>
+          <div class="portfolio-info">
+            <h3 data-i18n="portfolio.p3_title">Identidad Visual</h3>
+            <p data-i18n="portfolio.p3_desc">Branding completo con guía de estilo y assets digitales.</p>
+          </div>
+        </article>
+
+      </div><!-- /portfolio-grid -->
+    </div>
+  </section>
+
+
+  <!-- ╔══════════════════════════════════════════════════════╗ -->
+  <!-- ║               TESTIMONIALS SECTION                  ║ -->
+  <!-- ╚══════════════════════════════════════════════════════╝ -->
+  <section class="testimonials" id="testimonials" aria-label="Testimonios de clientes">
+    <div class="container">
+      <header class="section-header reveal">
+        <span class="section-label" data-i18n="testimonials.label">Clientes</span>
+        <h2 class="section-title" data-i18n="testimonials.title">Lo que dicen</h2>
+        <p class="section-desc" data-i18n="testimonials.desc">
+          Opiniones reales de quienes han confiado en Star Studio's.
+        </p>
+      </header>
+
+      <div class="testimonials-grid">
+
+        <blockquote class="testimonial-card reveal">
+          <div class="testimonial-stars" aria-label="5 estrellas">★★★★★</div>
+          <p class="testimonial-text" data-i18n="t1.text">
+            "Entregaron un bot de Discord completamente personalizado en tiempo récord. El nivel de detalle y la calidad
+            superaron mis expectativas. Comunicación impecable durante todo el proceso."
+          </p>
+          <footer class="testimonial-author">
+            <div class="author-avatar" aria-hidden="true">
+              <img src="{{ url_for('static', filename='images/resena/david.png') }}" alt="davidzx_gp"
+                class="author-avatar-img" draggable="false" oncontextmenu="return false;" />
+            </div>
+            <div class="author-info">
+              <strong>davidzx_gp</strong>
+              <span data-i18n="t1.project">Bot de Moderación Premium</span>
+            </div>
+          </footer>
+        </blockquote>
+
+        <blockquote class="testimonial-card reveal">
+          <div class="testimonial-stars" aria-label="5 estrellas">★★★★★</div>
+          <p class="testimonial-text" data-i18n="t2.text">
+            "Mi página web quedó exactamente como la visualicé, y hasta mejor. El diseño es limpio, profesional y
+            rápido. Definitivamente vuelvo para mis próximos proyectos."
+          </p>
+          <footer class="testimonial-author">
+            <div class="author-avatar" aria-hidden="true">
+              <img src="{{ url_for('static', filename='images/resena/romi.png') }}" alt="catromii"
+                class="author-avatar-img" draggable="false" oncontextmenu="return false;" />
+            </div>
+            <div class="author-info">
+              <strong>catromii</strong>
+              <span data-i18n="t2.project">Sitio Web Corporativo</span>
+            </div>
+          </footer>
+        </blockquote>
+
+        <blockquote class="testimonial-card reveal">
+          <div class="testimonial-stars" aria-label="5 estrellas">★★★★★</div>
+          <p class="testimonial-text" data-i18n="t3.text">
+            "El branding que desarrollaron para mi comunidad de Discord es exactamente lo que buscaba. Serios, creativos
+            y con mucho criterio estético. 100% recomendados."
+          </p>
+          <footer class="testimonial-author">
+            <div class="author-avatar" aria-hidden="true">
+              <img src="{{ url_for('static', filename='images/resena/kazuto.gif') }}" alt="kazut0_desu"
+                class="author-avatar-img" draggable="false" oncontextmenu="return false;" />
+            </div>
+            <div class="author-info">
+              <strong>kazut0_desu</strong>
+              <span data-i18n="t3.project">Identidad Visual &amp; Assets</span>
+            </div>
+          </footer>
+        </blockquote>
+
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Scroll indicator -->
-  <a href="#portfolio" class="scroll-cue" aria-label="Ir a Productos">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-      <path d="M12 5v14M5 12l7 7 7-7"/>
+
+  <!-- ╔══════════════════════════════════════════════════════╗ -->
+  <!-- ║           TERMS & CONDITIONS SECTION                ║ -->
+  <!-- ╚══════════════════════════════════════════════════════╝ -->
+  <section class="terms section-alt" id="terms" aria-label="Términos y Condiciones">
+    <div class="container">
+      <header class="section-header reveal">
+        <span class="section-label" data-i18n="terms.label">Legal</span>
+        <h2 class="section-title" data-i18n="terms.title">Términos y Condiciones</h2>
+        <p class="section-desc" data-i18n="terms.desc">
+          El uso de nuestros servicios implica la aceptación plena de los siguientes términos.
+        </p>
+      </header>
+
+      <!-- Accordion generated by JS -->
+      <div class="accordion reveal" id="accordion" role="list"></div>
+
+    </div>
+  </section>
+
+
+  <!-- ╔══════════════════════════════════════════════════════╗ -->
+  <!-- ║             CONTACT / TICKET SECTION                ║ -->
+  <!-- ╚══════════════════════════════════════════════════════╝ -->
+  <section class="contact" id="contact" aria-label="Formulario de contacto">
+    <div class="container">
+      <div class="contact-grid">
+
+        <!-- Info side -->
+        <div class="contact-info reveal">
+          <span class="section-label" data-i18n="contact.label">Contacto</span>
+          <h2 class="section-title" data-i18n="contact.title">Inicia tu Proyecto</h2>
+          <p data-i18n="contact.desc">
+            Completa el formulario y nos pondremos en contacto a través de Discord. Cada solicitud es revisada
+            personalmente por nuestro equipo.
+          </p>
+
+          <div class="contact-notice" role="note">
+            <div class="notice-content">
+              <strong data-i18n="contact.notice_title">Verificación de Identidad</strong>
+              <p data-i18n="contact.notice_text">
+                Es responsabilidad del cliente verificar que se está comunicando con los canales y cuentas oficiales de
+                Star Studio's antes de realizar cualquier pago o transferencia.
+              </p>
+            </div>
+          </div>
+
+          <div class="contact-notice contact-notice--security" role="note">
+            <div class="notice-content">
+              <strong data-i18n="contact.security_title">Seguridad</strong>
+              <p data-i18n="contact.security_text">
+                Nunca solicitamos pagos fuera de canales oficiales de ticket. Ante cualquier sospecha de suplantación,
+                no realices ningún pago.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form side -->
+        <div class="contact-form-wrap reveal">
+          <form class="contact-form" id="contact-form" novalidate aria-label="Formulario de solicitud">
+
+            <div class="form-group" id="fg-name">
+              <label for="name" data-i18n="form.name_label">Nombres y Apellidos</label>
+              <input type="text" id="name" name="name" autocomplete="name"
+                data-i18n-placeholder="form.name_placeholder" placeholder="Tu nombre completo"
+                required aria-required="true" />
+              <span class="field-error" role="alert" data-i18n="form.name_error">
+                Por favor ingresa tu nombre completo.
+              </span>
+            </div>
+
+            <div class="form-group" id="fg-phone_number">
+              <label for="phone_number" data-i18n="form.phone_label">Número de Teléfono</label>
+              <input type="tel" id="phone_number" name="phone_number" autocomplete="tel"
+                data-i18n-placeholder="form.phone_placeholder" placeholder="+57 300 000 0000 / Tu número"
+                required aria-required="true" />
+              <span class="field-error" role="alert" data-i18n="form.phone_error">
+                Por favor ingresa tu número de teléfono.
+              </span>
+            </div>
+
+            <div class="form-group" id="fg-message">
+              <label for="message" data-i18n="form.message_label">Consulta / Pedido</label>
+              <textarea id="message" name="message" rows="5"
+                data-i18n-placeholder="form.message_placeholder"
+                placeholder="Describe tu proyecto o consulta con el mayor detalle posible..."
+                required aria-required="true"></textarea>
+              <span class="field-error" role="alert" data-i18n="form.message_error">
+                Por favor describe tu consulta o pedido.
+              </span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full" id="submit-btn" aria-live="polite">
+              <span class="btn-text" data-i18n="form.submit">Enviar Solicitud</span>
+              <span class="btn-loading" aria-hidden="true" hidden>
+                <span class="spinner"></span>
+              </span>
+            </button>
+
+            <!-- Success -->
+            <div class="form-feedback form-success" id="form-success" role="status" aria-live="polite">
+              <span data-i18n="form.success_title">Mensaje enviado</span>
+            </div>
+
+            <!-- Error -->
+            <div class="form-feedback form-error-global" id="form-error-global" role="alert" aria-live="polite">
+              <span data-i18n="form.error_global">Error</span>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ╔══════════════════════════════════════════════════════╗ -->
+  <!-- ║                      FOOTER                         ║ -->
+  <!-- ╚══════════════════════════════════════════════════════╝ -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-grid">
+
+        <div class="footer-brand">
+          <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Star Studio's"
+            class="footer-logo dark-logo" draggable="false" oncontextmenu="return false;" />
+          <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="Star Studio's"
+            class="footer-logo light-logo" draggable="false" oncontextmenu="return false;" />
+          <p data-i18n="footer.tagline">Ingeniería digital y diseño sin atajos.</p>
+        </div>
+
+        <nav class="footer-links" aria-label="Navegación del footer">
+          <h4 data-i18n="footer.nav_title">Navegación</h4>
+          <a href="#hero"         data-i18n="nav.home">Inicio</a>
+          <a href="#portfolio"    data-i18n="nav.portfolio">Productos</a>
+          <a href="#testimonials" data-i18n="nav.testimonials">Clientes</a>
+          <a href="#terms"        data-i18n="nav.terms">Términos</a>
+          <a href="#contact"      data-i18n="nav.contact">Contacto</a>
+        </nav>
+
+        <nav class="footer-links" aria-label="Servicios">
+          <h4 data-i18n="footer.services_title">Servicios</h4>
+          <a href="#contact" data-i18n="hero.service1">Páginas Web</a>
+          <a href="#contact" data-i18n="hero.service2">Bots de Discord</a>
+          <a href="#contact" data-i18n="hero.service3">Diseño Gráfico</a>
+        </nav>
+
+      </div>
+
+      <div class="footer-bottom">
+        <p>
+          &copy; <span id="year"></span> Star Studio's.
+          <span data-i18n="footer.rights">Todos los derechos reservados.</span>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scroll to top -->
+  <button class="scroll-top" id="scroll-top" aria-label="Volver arriba">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M18 15l-6-6-6 6"/>
     </svg>
-  </a>
-</section>
+  </button>
 
+  <!-- App logic -->
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 
-<!-- ╔══════════════════════════════════════════════════════╗ -->
-<!-- ║                PORTFOLIO SECTION                    ║ -->
-<!-- ╚══════════════════════════════════════════════════════╝ -->
-<section class="portfolio section-alt" id="portfolio" aria-label="Productos">
-  <div class="container">
-    <header class="section-header reveal">
-      <span class="section-label" data-i18n="portfolio.label">Nuestros Productos</span>
-      <h2 class="section-title" data-i18n="portfolio.title">Productos</h2>
-      <p class="section-desc" data-i18n="portfolio.desc">
-        Productos seleccionados que demuestran nuestra precisión técnica y criterio estético.
-      </p>
-    </header>
+  <!-- Three.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
 
-    <div class="portfolio-grid" id="portfolio-grid">
+  <!-- ╔══════════════════════════════════════════════════════╗ -->
+  <!-- ║          INTERACTIVE RUBIK'S CUBE (Three.js)        ║ -->
+  <!-- ╚══════════════════════════════════════════════════════╝ -->
+  <script>
+  (function initRubiksCube() {
+    'use strict';
 
-      <article class="portfolio-card reveal">
-        <div class="portfolio-img-wrap">
-          <img src="{{ url_for('static', filename='images/productos/web/web.png') }}"
-               alt="Proyecto Web Premium" class="portfolio-img" id="web-product-img"
-               draggable="false" oncontextmenu="return false;"
-               loading="lazy" onerror="this.closest('.portfolio-img-wrap').classList.add('no-img')" />
-          <div class="portfolio-overlay">
-            <span class="portfolio-tag" data-i18n="portfolio.tag_web">Página Web</span>
-          </div>
-        </div>
-        <div class="portfolio-info">
-          <h3 data-i18n="portfolio.p1_title">Proyecto Web Premium</h3>
-          <p data-i18n="portfolio.p1_desc">Sitio corporativo con diseño a medida y CMS personalizado.</p>
-        </div>
-      </article>
+    const canvas = document.getElementById('rubik-canvas');
+    if (!canvas || typeof THREE === 'undefined') return;
 
-      <article class="portfolio-card reveal">
-        <div class="portfolio-img-wrap">
-          <img src="{{ url_for('static', filename='images/productos/bot/botall.png') }}"
-               alt="Bot de Moderación" class="portfolio-img" id="bot-product-img"
-               draggable="false" oncontextmenu="return false;"
-               loading="lazy" onerror="this.closest('.portfolio-img-wrap').classList.add('no-img')" />
-          <div class="portfolio-overlay">
-            <span class="portfolio-tag" data-i18n="portfolio.tag_bot">Bot Discord</span>
-          </div>
-        </div>
-        <div class="portfolio-info">
-          <h3 data-i18n="portfolio.p2_title">Bot de Moderación</h3>
-          <p data-i18n="portfolio.p2_desc">Sistema automatizado con panel de control y logs avanzados.</p>
-        </div>
-      </article>
+    /* ── Scene ─────────────────────────────────────────────── */
+    const scene = new THREE.Scene();
 
-      <article class="portfolio-card reveal">
-        <div class="portfolio-img-wrap">
-          <img src="{{ url_for('static', filename='images/productos/grafico/designes.png') }}"
-               alt="Identidad Visual" class="portfolio-img" id="design-product-img"
-               draggable="false" oncontextmenu="return false;"
-               loading="lazy" onerror="this.closest('.portfolio-img-wrap').classList.add('no-img')" />
-          <div class="portfolio-overlay">
-            <span class="portfolio-tag" data-i18n="portfolio.tag_design">Diseño</span>
-          </div>
-        </div>
-        <div class="portfolio-info">
-          <h3 data-i18n="portfolio.p3_title">Identidad Visual</h3>
-          <p data-i18n="portfolio.p3_desc">Branding completo con guía de estilo y assets digitales.</p>
-        </div>
-      </article>
+    const W = canvas.clientWidth  || 420;
+    const H = canvas.clientHeight || 420;
 
-    </div><!-- /portfolio-grid -->
-  </div>
-</section>
+    const camera = new THREE.PerspectiveCamera(38, W / H, 0.1, 100);
+    camera.position.set(4.8, 3.6, 6.5);
+    camera.lookAt(0, 0, 0);
 
+    const renderer = new THREE.WebGLRenderer({
+      canvas:    canvas,
+      antialias: true,
+      alpha:     true,
+    });
+    renderer.setSize(W, H);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0); /* transparent */
 
-<!-- ╔══════════════════════════════════════════════════════╗ -->
-<!-- ║               TESTIMONIALS SECTION                  ║ -->
-<!-- ╚══════════════════════════════════════════════════════╝ -->
-<section class="testimonials" id="testimonials" aria-label="Testimonios de clientes">
-  <div class="container">
-    <header class="section-header reveal">
-      <span class="section-label" data-i18n="testimonials.label">Clientes</span>
-      <h2 class="section-title" data-i18n="testimonials.title">Lo que dicen</h2>
-      <p class="section-desc" data-i18n="testimonials.desc">
-        Opiniones reales de quienes han confiado en Star Studio's.
-      </p>
-    </header>
+    /* ── Official Rubik's Cube face colours ─────────────────
+       BoxGeometry face order: +X, -X, +Y, -Y, +Z, -Z
+       Visual layout: Right=Red, Left=Orange, Top=White,
+                      Bottom=Yellow, Front=Blue, Back=Green  */
+    const FACE_COLORS = {
+      RIGHT:  0xC41E3A,  /* Red */
+      LEFT:   0xFF5500,  /* Orange */
+      TOP:    0xFFFFFF,  /* White */
+      BOTTOM: 0xFFD500,  /* Yellow */
+      FRONT:  0x003DA5,  /* Blue */
+      BACK:   0x009B48,  /* Green */
+      INNER:  0x111111,  /* Dark inner (hidden faces) */
+    };
 
-    <div class="testimonials-grid">
+    /* ── Build 3×3×3 cubelets ───────────────────────────────── */
+    const group   = new THREE.Group();
+    const STEP    = 1.06;   /* distance between cubelet centres */
+    const SIZE    = 0.96;   /* cubelet edge length (gap = 0.10) */
 
-      <blockquote class="testimonial-card reveal">
-        <div class="testimonial-stars" aria-label="5 estrellas">★★★★★</div>
-        <p class="testimonial-text" data-i18n="t1.text">
-          "Entregaron un bot de Discord completamente personalizado en tiempo récord. El nivel de detalle y la calidad superaron mis expectativas. Comunicación impecable durante todo el proceso."
-        </p>
-        <footer class="testimonial-author">
-          <div class="author-avatar" aria-hidden="true">
-            <img src="{{ url_for('static', filename='images/resena/david.png') }}" alt="davidzx_gp" class="author-avatar-img" draggable="false" oncontextmenu="return false;" />
-          </div>
-          <div class="author-info">
-            <strong>davidzx_gp</strong>
-            <span data-i18n="t1.project">Bot de Moderación Premium</span>
-          </div>
-        </footer>
-      </blockquote>
+    for (let x = -1; x <= 1; x++) {
+      for (let y = -1; y <= 1; y++) {
+        for (let z = -1; z <= 1; z++) {
+          const mats = [
+            new THREE.MeshLambertMaterial({ color: x ===  1 ? FACE_COLORS.RIGHT  : FACE_COLORS.INNER }),
+            new THREE.MeshLambertMaterial({ color: x === -1 ? FACE_COLORS.LEFT   : FACE_COLORS.INNER }),
+            new THREE.MeshLambertMaterial({ color: y ===  1 ? FACE_COLORS.TOP    : FACE_COLORS.INNER }),
+            new THREE.MeshLambertMaterial({ color: y === -1 ? FACE_COLORS.BOTTOM : FACE_COLORS.INNER }),
+            new THREE.MeshLambertMaterial({ color: z ===  1 ? FACE_COLORS.FRONT  : FACE_COLORS.INNER }),
+            new THREE.MeshLambertMaterial({ color: z === -1 ? FACE_COLORS.BACK   : FACE_COLORS.INNER }),
+          ];
+          const geo  = new THREE.BoxGeometry(SIZE, SIZE, SIZE);
+          const mesh = new THREE.Mesh(geo, mats);
+          mesh.position.set(x * STEP, y * STEP, z * STEP);
+          group.add(mesh);
+        }
+      }
+    }
+    scene.add(group);
 
-      <blockquote class="testimonial-card reveal">
-        <div class="testimonial-stars" aria-label="5 estrellas">★★★★★</div>
-        <p class="testimonial-text" data-i18n="t2.text">
-          "Mi página web quedó exactamente como la visualicé, y hasta mejor. El diseño es limpio, profesional y rápido. Definitivamente vuelvo para mis próximos proyectos."
-        </p>
-        <footer class="testimonial-author">
-          <div class="author-avatar" aria-hidden="true">
-            <img src="{{ url_for('static', filename='images/resena/romi.png') }}" alt="catromii" class="author-avatar-img" draggable="false" oncontextmenu="return false;" />
-          </div>
-          <div class="author-info">
-            <strong>catromii</strong>
-            <span data-i18n="t2.project">Sitio Web Corporativo</span>
-          </div>
-        </footer>
-      </blockquote>
+    /* Initial rotation — show 3 faces (isometric-style) */
+    group.rotation.x = 0.45;
+    group.rotation.y = 0.60;
 
-      <blockquote class="testimonial-card reveal">
-        <div class="testimonial-stars" aria-label="5 estrellas">★★★★★</div>
-        <p class="testimonial-text" data-i18n="t3.text">
-          "El branding que desarrollaron para mi comunidad de Discord es exactamente lo que buscaba. Serios, creativos y con mucho criterio estético. 100% recomendados."
-        </p>
-        <footer class="testimonial-author">
-          <div class="author-avatar" aria-hidden="true">
-            <img src="{{ url_for('static', filename='images/resena/kazuto.gif') }}" alt="kazut0_desu" class="author-avatar-img" draggable="false" oncontextmenu="return false;" />
-          </div>
-          <div class="author-info">
-            <strong>kazut0_desu</strong>
-            <span data-i18n="t3.project">Identidad Visual &amp; Assets</span>
-          </div>
-        </footer>
-      </blockquote>
+    /* ── Lighting ───────────────────────────────────────────── */
+    scene.add(new THREE.AmbientLight(0xffffff, 0.65));
 
-    </div>
-  </div>
-</section>
+    const key = new THREE.DirectionalLight(0xffffff, 0.9);
+    key.position.set(6, 9, 8);
+    scene.add(key);
 
+    const fill = new THREE.DirectionalLight(0xffffff, 0.35);
+    fill.position.set(-4, -2, -3);
+    scene.add(fill);
 
-<!-- ╔══════════════════════════════════════════════════════╗ -->
-<!-- ║           TERMS & CONDITIONS SECTION                ║ -->
-<!-- ╚══════════════════════════════════════════════════════╝ -->
-<section class="terms section-alt" id="terms" aria-label="Términos y Condiciones">
-  <div class="container">
-    <header class="section-header reveal">
-      <span class="section-label" data-i18n="terms.label">Legal</span>
-      <h2 class="section-title" data-i18n="terms.title">Términos y Condiciones</h2>
-      <p class="section-desc" data-i18n="terms.desc">
-        El uso de nuestros servicios implica la aceptación plena de los siguientes términos.
-      </p>
-    </header>
+    const rim = new THREE.DirectionalLight(0xddddff, 0.2);
+    rim.position.set(0, -5, 5);
+    scene.add(rim);
 
-    <!-- Accordion generated by JS -->
-    <div class="accordion reveal" id="accordion" role="list"></div>
+    /* ── Mouse / touch interaction ──────────────────────────── */
+    let dragging  = false;
+    let lastX     = 0;
+    let lastY     = 0;
+    let velX      = 0;
+    let velY      = 0;
+    let autoRotate = true;
+    let autoTimer  = null;
 
-  </div>
-</section>
+    function onDragStart(cx, cy) {
+      dragging   = true;
+      autoRotate = false;
+      lastX      = cx;
+      lastY      = cy;
+      velX       = 0;
+      velY       = 0;
+      clearTimeout(autoTimer);
+      canvas.style.cursor = 'grabbing';
+    }
 
+    function onDragMove(cx, cy) {
+      if (!dragging) return;
+      const dx = cx - lastX;
+      const dy = cy - lastY;
+      velY = dx * 0.012;
+      velX = dy * 0.012;
+      group.rotation.y += velY;
+      group.rotation.x += velX;
+      lastX = cx;
+      lastY = cy;
+    }
 
-<!-- ╔══════════════════════════════════════════════════════╗ -->
-<!-- ║             CONTACT / TICKET SECTION                ║ -->
-<!-- ╚══════════════════════════════════════════════════════╝ -->
-<section class="contact" id="contact" aria-label="Formulario de contacto">
-  <div class="container">
-    <div class="contact-grid">
+    function onDragEnd() {
+      dragging = false;
+      canvas.style.cursor = 'grab';
+      /* Resume auto-rotate after 3 s of inactivity */
+      autoTimer = setTimeout(() => { autoRotate = true; }, 3000);
+    }
 
-      <!-- Info side -->
-      <div class="contact-info reveal">
-        <span class="section-label" data-i18n="contact.label">Contacto</span>
-        <h2 class="section-title" data-i18n="contact.title">Inicia tu Proyecto</h2>
-        <p data-i18n="contact.desc">
-          Completa el formulario y nos pondremos en contacto a través de Discord. Cada solicitud es revisada personalmente por nuestro equipo.
-        </p>
+    /* Mouse */
+    canvas.addEventListener('mousedown', e => onDragStart(e.clientX, e.clientY));
+    window.addEventListener('mousemove', e => onDragMove(e.clientX, e.clientY));
+    window.addEventListener('mouseup',   onDragEnd);
 
-        <div class="contact-notice" role="note">
-          <div class="notice-content">
-            <strong data-i18n="contact.notice_title">Verificación de Identidad</strong>
-            <p data-i18n="contact.notice_text">
-              Es responsabilidad del cliente verificar que se está comunicando con los canales y cuentas oficiales de Star Studio's antes de realizar cualquier pago o transferencia.
-            </p>
-          </div>
-        </div>
+    /* Touch */
+    canvas.addEventListener('touchstart', e => {
+      onDragStart(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+    canvas.addEventListener('touchmove', e => {
+      onDragMove(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+    canvas.addEventListener('touchend',  onDragEnd);
 
-        <div class="contact-notice contact-notice--security" role="note">
-          <div class="notice-content">
-            <strong data-i18n="contact.security_title">Seguridad</strong>
-            <p data-i18n="contact.security_text">
-              Nunca solicitamos pagos fuera de canales oficiales de ticket. Ante cualquier sospecha de suplantación, no realices ningún pago.
-            </p>
-          </div>
-        </div>
-      </div>
+    canvas.style.cursor = 'grab';
 
-      <!-- Form side -->
-      <div class="contact-form-wrap reveal">
-        <form class="contact-form" id="contact-form" novalidate aria-label="Formulario de solicitud">
+    /* ── Render loop ────────────────────────────────────────── */
+    function animate() {
+      requestAnimationFrame(animate);
 
-          <div class="form-group" id="fg-name">
-            <label for="name" data-i18n="form.name_label">Nombres y Apellidos</label>
-            <input type="text" id="name" name="name"
-                   autocomplete="name"
-                   data-i18n-placeholder="form.name_placeholder"
-                   placeholder="Tu nombre completo"
-                   required aria-required="true" />
-            <span class="field-error" role="alert" data-i18n="form.name_error">
-              Por favor ingresa tu nombre completo.
-            </span>
-          </div>
+      if (autoRotate) {
+        group.rotation.y += 0.006;
+        group.rotation.x += 0.002;
+      } else if (!dragging) {
+        /* Inertia */
+        velX *= 0.92;
+        velY *= 0.92;
+        group.rotation.x += velX;
+        group.rotation.y += velY;
+      }
 
-          <div class="form-group" id="fg-phone_number">
-            <label for="phone_number" data-i18n="form.phone_label">Número de Teléfono</label>
-            <input type="tel" id="phone_number" name="phone_number"
-                   autocomplete="tel"
-                   data-i18n-placeholder="form.phone_placeholder"
-                   placeholder="+57 300 000 0000 / Tu número"
-                   required aria-required="true" />
-            <span class="field-error" role="alert" data-i18n="form.phone_error">
-              Por favor ingresa tu número de teléfono.
-            </span>
-          </div>
+      renderer.render(scene, camera);
+    }
+    animate();
 
-          <div class="form-group" id="fg-message">
-            <label for="message" data-i18n="form.message_label">Consulta / Pedido</label>
-            <textarea id="message" name="message" rows="5"
-                      data-i18n-placeholder="form.message_placeholder"
-                      placeholder="Describe tu proyecto o consulta con el mayor detalle posible..."
-                      required aria-required="true"></textarea>
-            <span class="field-error" role="alert" data-i18n="form.message_error">
-              Por favor describe tu consulta o pedido.
-            </span>
-          </div>
+    /* ── Resize handling ────────────────────────────────────── */
+    const ro = new ResizeObserver(() => {
+      const nw = canvas.clientWidth;
+      const nh = canvas.clientHeight;
+      if (nw === 0 || nh === 0) return;
+      camera.aspect = nw / nh;
+      camera.updateProjectionMatrix();
+      renderer.setSize(nw, nh);
+    });
+    ro.observe(canvas.parentElement);
 
-          <button type="submit" class="btn btn-primary btn-full" id="submit-btn" aria-live="polite">
-            <span class="btn-text" data-i18n="form.submit">Enviar Solicitud</span>
-            <span class="btn-loading" aria-hidden="true" hidden>
-              <span class="spinner"></span>
-            </span>
-          </button>
+  })();
+  </script>
 
-          <!-- Success -->
-          <div class="form-feedback form-success" id="form-success" role="status" aria-live="polite">
-            <span data-i18n="form.success_title">Mensaje enviado</span>
-          </div>
-
-          <!-- Error -->
-          <div class="form-feedback form-error-global" id="form-error-global" role="alert" aria-live="polite">
-            <span data-i18n="form.error_global">Error</span>
-          </div>
-
-        </form>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-
-<!-- ╔══════════════════════════════════════════════════════╗ -->
-<!-- ║                      FOOTER                         ║ -->
-<!-- ╚══════════════════════════════════════════════════════╝ -->
-<footer class="footer" role="contentinfo">
-  <div class="container">
-    <div class="footer-grid">
-
-      <div class="footer-brand">
-        <img src="{{ url_for('static', filename='images/logo.png') }}"
-             alt="Star Studio's" class="footer-logo dark-logo" draggable="false" oncontextmenu="return false;" />
-        <img src="{{ url_for('static', filename='images/logo2.png') }}"
-             alt="Star Studio's" class="footer-logo light-logo" draggable="false" oncontextmenu="return false;" />
-        <p data-i18n="footer.tagline">Ingeniería digital y diseño sin atajos.</p>
-      </div>
-
-      <nav class="footer-links" aria-label="Navegación del footer">
-        <h4 data-i18n="footer.nav_title">Navegación</h4>
-        <a href="#hero"         data-i18n="nav.home">Inicio</a>
-        <a href="#portfolio"    data-i18n="nav.portfolio">Productos</a>
-        <a href="#testimonials" data-i18n="nav.testimonials">Clientes</a>
-        <a href="#terms"        data-i18n="nav.terms">Términos</a>
-        <a href="#contact"      data-i18n="nav.contact">Contacto</a>
-      </nav>
-
-      <nav class="footer-links" aria-label="Servicios">
-        <h4 data-i18n="footer.services_title">Servicios</h4>
-        <a href="#contact" data-i18n="hero.service1">Páginas Web</a>
-        <a href="#contact" data-i18n="hero.service2">Bots de Discord</a>
-        <a href="#contact" data-i18n="hero.service3">Diseño Gráfico</a>
-      </nav>
-
-    </div>
-
-    <div class="footer-bottom">
-      <p>
-        &copy; <span id="year"></span> Star Studio's.
-        <span data-i18n="footer.rights">Todos los derechos reservados.</span>
-      </p>
-    </div>
-  </div>
-</footer>
-
-<!-- Scroll to top -->
-<button class="scroll-top" id="scroll-top" aria-label="Volver arriba">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-    <path d="M18 15l-6-6-6 6"/>
-  </svg>
-</button>
-
-<script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>
