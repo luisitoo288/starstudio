@@ -723,14 +723,13 @@
       requestAnimationFrame(animReset);
     }
 
-    /* ── 7. Interaction Handler (Mouse / Touch Dragging) ────────────── */
+    /* ── 7. Interaction Handler & View-Relative Movements ────────────── */
     let isDragging = false;
     let lastMouseX = 0;
     let lastMouseY = 0;
     let velX = 0;
     let velY = 0;
-    let autoRotate = true;
-    let autoTimer = null;
+    let autoRotate = false; /* Disable auto-rotate completely per user request */
 
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
@@ -739,6 +738,53 @@
     let dragStartPos = { x: 0, y: 0 };
     let selectedCubelet = null;
     let selectedNormal = null;
+
+    /* Compute layer axis and index relative to the CURRENT camera view */
+    function getCameraRelativeLayerTarget(direction) {
+      const camDirWorld = new THREE.Vector3();
+      camera.getWorldDirection(camDirWorld).negate(); // Vector pointing toward camera
+
+      const camUpWorld = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
+      const camRightWorld = new THREE.Vector3().crossVectors(camUpWorld, camDirWorld).normalize();
+
+      const targetWorld = new THREE.Vector3();
+      switch (direction) {
+        case 'FRONT': targetWorld.copy(camDirWorld); break;
+        case 'BACK':  targetWorld.copy(camDirWorld).negate(); break;
+        case 'UP':    targetWorld.copy(camUpWorld); break;
+        case 'DOWN':  targetWorld.copy(camUpWorld).negate(); break;
+        case 'RIGHT': targetWorld.copy(camRightWorld); break;
+        case 'LEFT':  targetWorld.copy(camRightWorld).negate(); break;
+      }
+
+      const invQuat = mainGroup.quaternion.clone().invert();
+      const localVec = targetWorld.clone().applyQuaternion(invQuat);
+
+      const absX = Math.abs(localVec.x);
+      const absY = Math.abs(localVec.y);
+      const absZ = Math.abs(localVec.z);
+
+      let axis = 'X';
+      let val = localVec.x;
+
+      if (absY > absX && absY > absZ) {
+        axis = 'Y';
+        val = localVec.y;
+      } else if (absZ > absX && absZ > absY) {
+        axis = 'Z';
+        val = localVec.z;
+      }
+
+      const layerIdx = val >= 0 ? 1 : -1;
+      const dir = (direction === 'LEFT' || direction === 'DOWN' || direction === 'BACK') ? -1 : 1;
+
+      return { axis, layerIdx, dir };
+    }
+
+    function rotateCameraRelativeLayer(direction) {
+      const t = getCameraRelativeLayerTarget(direction);
+      rotateLayer(t.axis, t.layerIdx, t.dir, 260);
+    }
 
     function getCanvasCoords(e) {
       const rect = canvas.getBoundingClientRect();
@@ -756,8 +802,6 @@
       if (isAnimating) return;
       const coords = getCanvasCoords(e);
 
-      autoRotate = false;
-      clearTimeout(autoTimer);
       isDragging = true;
       lastMouseX = coords.rawX;
       lastMouseY = coords.rawY;
@@ -788,27 +832,13 @@
       if (activeDragMode === 'CHECK') {
         const totalDist = Math.hypot(coords.rawX - dragStartPos.x, coords.rawY - dragStartPos.y);
         if (totalDist > 14) {
-          if (selectedCubelet && selectedNormal) {
-            const normalMatrix = new THREE.Matrix3().getNormalMatrix(selectedCubelet.matrixWorld);
-            const worldNormal = selectedNormal.clone().applyMatrix3(normalMatrix).normalize();
-
-            let axis = 'Y';
-            let layerIdx = selectedCubelet.userData.gridY;
-            let dir = dx > 0 ? 1 : -1;
-
-            if (Math.abs(worldNormal.x) > 0.7) {
-              axis = Math.abs(dy) > Math.abs(dx) ? 'Z' : 'Y';
-              layerIdx = axis === 'Z' ? selectedCubelet.userData.gridZ : selectedCubelet.userData.gridY;
-            } else if (Math.abs(worldNormal.y) > 0.7) {
-              axis = Math.abs(dx) > Math.abs(dy) ? 'X' : 'Z';
-              layerIdx = axis === 'X' ? selectedCubelet.userData.gridX : selectedCubelet.userData.gridZ;
-            } else {
-              axis = Math.abs(dx) > Math.abs(dy) ? 'Y' : 'X';
-              layerIdx = axis === 'Y' ? selectedCubelet.userData.gridY : selectedCubelet.userData.gridX;
-            }
-
+          if (selectedCubelet) {
+            // Determine slice drag relative to camera orientation
+            const isHorizontal = Math.abs(dx) > Math.abs(dy);
+            const targetDir = isHorizontal ? (dx > 0 ? 'RIGHT' : 'LEFT') : (dy > 0 ? 'DOWN' : 'UP');
+            
             activeDragMode = 'DONE';
-            rotateLayer(axis, layerIdx, dir, 220);
+            rotateCameraRelativeLayer(targetDir);
           } else {
             activeDragMode = 'CUBE';
           }
@@ -830,7 +860,6 @@
       isDragging = false;
       activeDragMode = null;
       canvas.style.cursor = 'grab';
-      autoTimer = setTimeout(() => { autoRotate = true; }, 3500);
     }
 
     canvas.addEventListener('mousedown', onPointerDown);
@@ -841,14 +870,14 @@
     canvas.addEventListener('touchmove',  onPointerMove, { passive: true });
     canvas.addEventListener('touchend',   onPointerUp);
 
-    /* ── 8. UI Button Controls Binding ─────────────────────────────── */
+    /* ── 8. UI Button Controls Binding (View Relative) ─────────────── */
     const btnMap = {
-      'cube-btn-u': () => rotateLayer('Y',  1,  1),
-      'cube-btn-d': () => rotateLayer('Y', -1, -1),
-      'cube-btn-l': () => rotateLayer('X', -1,  1),
-      'cube-btn-r': () => rotateLayer('X',  1, -1),
-      'cube-btn-f': () => rotateLayer('Z',  1,  1),
-      'cube-btn-b': () => rotateLayer('Z', -1, -1),
+      'cube-btn-u': () => rotateCameraRelativeLayer('UP'),
+      'cube-btn-d': () => rotateCameraRelativeLayer('DOWN'),
+      'cube-btn-l': () => rotateCameraRelativeLayer('LEFT'),
+      'cube-btn-r': () => rotateCameraRelativeLayer('RIGHT'),
+      'cube-btn-f': () => rotateCameraRelativeLayer('FRONT'),
+      'cube-btn-b': () => rotateCameraRelativeLayer('BACK'),
     };
 
     Object.keys(btnMap).forEach(id => {
@@ -856,10 +885,7 @@
       if (btn) {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
-          autoRotate = false;
-          clearTimeout(autoTimer);
           btnMap[id]();
-          autoTimer = setTimeout(() => { autoRotate = true; }, 4000);
         });
       }
     });
@@ -868,8 +894,6 @@
     if (shuffleBtn) {
       shuffleBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        autoRotate = false;
-        clearTimeout(autoTimer);
         shuffleCube();
       });
     }
@@ -886,10 +910,7 @@
     function animate() {
       requestAnimationFrame(animate);
 
-      if (autoRotate && !isAnimating && !isDragging) {
-        mainGroup.rotation.y += 0.005;
-        mainGroup.rotation.x += 0.0015;
-      } else if (!isDragging && !isAnimating) {
+      if (!isDragging && !isAnimating) {
         velX *= 0.92;
         velY *= 0.92;
         mainGroup.rotation.x += velX;
