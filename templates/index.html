@@ -399,12 +399,49 @@
               </span>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-full" id="submit-btn" aria-live="polite">
-              <span class="btn-text" data-i18n="form.submit">Enviar Solicitud</span>
-              <span class="btn-loading" aria-hidden="true" hidden>
-                <span class="spinner"></span>
+            <!-- React Bits FuseButton Component -->
+            <span id="fuse-submit-btn" class="fuse-button" data-phase="idle" data-fuse="outline"
+              style="--fb-ink: var(--color-white); --fb-bg: var(--color-graphite); --fb-fuse: var(--color-iris-violet); --fb-radius: 22px; --fb-h: 48px;">
+              
+              <!-- Idle face (Submit) -->
+              <button type="submit" class="fuse-button__face fuse-button__idle" id="fuse-idle-btn">
+                <span class="fuse-button__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                  </svg>
+                </span>
+                <span data-i18n="form.submit">Enviar Solicitud</span>
+              </button>
+
+              <!-- Armed face (Undo) -->
+              <button type="button" class="fuse-button__face fuse-button__undo" id="fuse-undo-btn" tabindex="-1">
+                <span class="fuse-button__icon fuse-button__icon--undo" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 7v6h6"></path>
+                    <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
+                  </svg>
+                </span>
+                <span data-i18n="form.undo">Deshacer (4s)</span>
+              </button>
+
+              <!-- Settled face (Done) -->
+              <span class="fuse-button__face fuse-button__settled" id="fuse-settled-btn">
+                <span class="fuse-button__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </span>
+                <span data-i18n="form.success_title">¡Mensaje Enviado!</span>
               </span>
-            </button>
+
+              <!-- SVG Rim for Fuse Outline -->
+              <svg class="fuse-button__rim" aria-hidden="true">
+                <rect id="fuse-rim-rect" pathLength="1" />
+              </svg>
+
+              <span class="fuse-button__status" id="fuse-status" role="status" aria-live="polite"></span>
+            </span>
 
             <!-- Success -->
             <div class="form-feedback form-success" id="form-success" role="status" aria-live="polite">

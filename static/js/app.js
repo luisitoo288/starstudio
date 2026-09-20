@@ -716,13 +716,22 @@ function initScrollTop() {
 /* ────────────────────────────────────────────────────────────────
    CONTACT FORM
    ──────────────────────────────────────────────────────────────── */
+/* ────────────────────────────────────────────────────────────────
+   CONTACT FORM (React Bits FuseButton Controller)
+   ──────────────────────────────────────────────────────────────── */
 function initContactForm() {
   const form = document.getElementById('contact-form');
-  const submitBtn = document.getElementById('submit-btn');
-  const btnText = submitBtn.querySelector('.btn-text');
-  const btnLoading = submitBtn.querySelector('.btn-loading');
   const formSuccess = document.getElementById('form-success');
   const formErrGlobal = document.getElementById('form-error-global');
+
+  const fuseContainer = document.getElementById('fuse-submit-btn');
+  const fuseUndoBtn   = document.getElementById('fuse-undo-btn');
+  const fuseRimRect   = document.getElementById('fuse-rim-rect');
+  const fuseStatus    = document.getElementById('fuse-status');
+
+  let fusePhase = 'idle'; // 'idle' | 'armed' | 'settled'
+  let fuseAnim = null;
+  const undoWindowMs = 4000;
 
   const fields = [
     { id: 'name', groupId: 'fg-name' },
@@ -732,19 +741,89 @@ function initContactForm() {
 
   // Clear error on input
   fields.forEach(({ id, groupId }) => {
-    document.getElementById(id).addEventListener('input', () => {
-      if (document.getElementById(id).value.trim()) {
-        document.getElementById(groupId).classList.remove('error');
-      }
-    });
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', () => {
+        if (el.value.trim()) {
+          const group = document.getElementById(groupId);
+          if (group) group.classList.remove('error');
+        }
+      });
+    }
   });
 
-  form.addEventListener('submit', async e => {
+  function setFusePhase(nextPhase) {
+    fusePhase = nextPhase;
+    if (fuseContainer) {
+      fuseContainer.setAttribute('data-phase', nextPhase);
+    }
+    if (fuseStatus) {
+      fuseStatus.textContent = nextPhase === 'idle' ? '' : (nextPhase === 'armed' ? 'Deshacer' : 'Mensaje enviado');
+    }
+  }
+
+  function startFuseAnimation(onFinishCallback) {
+    if (!fuseRimRect) return;
+    if (fuseAnim) fuseAnim.cancel();
+
+    fuseAnim = fuseRimRect.animate(
+      [
+        { strokeDashoffset: 0 },
+        { strokeDashoffset: -1 }
+      ],
+      {
+        duration: undoWindowMs,
+        easing: 'linear',
+        fill: 'forwards'
+      }
+    );
+
+    fuseAnim.onfinish = () => {
+      onFinishCallback();
+    };
+  }
+
+  function cancelFuse() {
+    if (fuseAnim) {
+      fuseAnim.cancel();
+      fuseAnim = null;
+    }
+    setFusePhase('idle');
+  }
+
+  // Pointer press scaling & Escape key undo
+  if (fuseContainer) {
+    fuseContainer.addEventListener('pointerdown', (e) => {
+      if (e.button === 0 && fusePhase !== 'settled') fuseContainer.setAttribute('data-pressed', '');
+    });
+    const releasePress = () => fuseContainer.removeAttribute('data-pressed');
+    fuseContainer.addEventListener('pointerup', releasePress);
+    fuseContainer.addEventListener('pointercancel', releasePress);
+    fuseContainer.addEventListener('pointerleave', releasePress);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && fusePhase === 'armed') {
+        e.preventDefault();
+        cancelFuse();
+      }
+    });
+  }
+
+  if (fuseUndoBtn) {
+    fuseUndoBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      cancelFuse();
+    });
+  }
+
+  form.addEventListener('submit', e => {
     e.preventDefault();
 
     // Reset feedback
-    formSuccess.classList.remove('show');
-    formErrGlobal.classList.remove('show');
+    if (formSuccess) formSuccess.classList.remove('show');
+    if (formErrGlobal) formErrGlobal.classList.remove('show');
+
+    if (fusePhase === 'armed' || fusePhase === 'settled') return;
 
     // Validate
     let isValid = true;
@@ -752,44 +831,52 @@ function initContactForm() {
       const el = document.getElementById(id);
       const group = document.getElementById(groupId);
       if (!el.value.trim()) {
-        group.classList.add('error');
+        if (group) group.classList.add('error');
         isValid = false;
       } else {
-        group.classList.remove('error');
+        if (group) group.classList.remove('error');
       }
     });
     if (!isValid) return;
 
-    // Loading state
-    setLoading(true);
+    // Arm fuse button
+    setFusePhase('armed');
 
-    try {
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: document.getElementById('name').value.trim(),
-          phone_number: document.getElementById('phone_number').value.trim(),
-          message: document.getElementById('message').value.trim(),
-        }),
-      });
+    startFuseAnimation(async () => {
+      // Fuse burned out -> Send post request
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: document.getElementById('name').value.trim(),
+            phone_number: document.getElementById('phone_number').value.trim(),
+            message: document.getElementById('message').value.trim(),
+          }),
+        });
 
-      const data = await res.json();
+        const data = await res.json();
 
-      if (data.success) {
-        form.reset();
-        showNotification(formSuccess, 'success');
-      } else {
+        if (data.success) {
+          setFusePhase('settled');
+          form.reset();
+          showNotification(formSuccess, 'success');
+          setTimeout(() => {
+            setFusePhase('idle');
+          }, 3000);
+        } else {
+          setFusePhase('idle');
+          showNotification(formErrGlobal, 'error');
+        }
+      } catch {
+        setFusePhase('idle');
         showNotification(formErrGlobal, 'error');
       }
-    } catch {
-      showNotification(formErrGlobal, 'error');
-    } finally {
-      setLoading(false);
-    }
+    });
   });
 
   function showNotification(el, type) {
+    if (!el) return;
     el.classList.add('show');
     playNotificationSound(type);
     setTimeout(() => {
@@ -825,12 +912,5 @@ function initContactForm() {
     } catch (e) {
       console.log('Audio not supported or blocked');
     }
-  }
-
-  function setLoading(loading) {
-    submitBtn.disabled = loading;
-    btnText.style.display = loading ? 'none' : '';
-    btnLoading.style.display = loading ? 'flex' : 'none';
-    btnLoading.hidden = !loading;
   }
 }
