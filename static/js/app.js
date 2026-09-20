@@ -1416,12 +1416,11 @@ function initProfileCard() {
   const round = (v, precision = 3) => parseFloat(v.toFixed(precision));
   const adjust = (v, fMin, fMax, tMin, tMax) => round(tMin + ((tMax - tMin) * (v - fMin)) / (fMax - fMin));
 
-  let currentX = 0;
-  let currentY = 0;
-  let targetX = 0;
-  let targetY = 0;
-  let running = false;
-  let rafId = null;
+  let currentX = (shell.clientWidth || 360) / 2;
+  let currentY = (shell.clientHeight || 520) / 2;
+  let targetX = currentX;
+  let targetY = currentY;
+  let isHovered = false;
 
   function setVarsFromXY(x, y) {
     const width = shell.clientWidth || 1;
@@ -1435,69 +1434,55 @@ function initProfileCard() {
 
     wrap.style.setProperty('--pointer-x', `${percentX}%`);
     wrap.style.setProperty('--pointer-y', `${percentY}%`);
-    wrap.style.setProperty('--background-x', `${adjust(percentX, 0, 100, 35, 65)}%`);
-    wrap.style.setProperty('--background-y', `${adjust(percentY, 0, 100, 35, 65)}%`);
+    wrap.style.setProperty('--background-x', `${adjust(percentX, 0, 100, 32, 68)}%`);
+    wrap.style.setProperty('--background-y', `${adjust(percentY, 0, 100, 32, 68)}%`);
     wrap.style.setProperty('--pointer-from-center', `${clamp(Math.hypot(percentY - 50, percentX - 50) / 50, 0, 1)}`);
     wrap.style.setProperty('--pointer-from-top', `${percentY / 100}`);
     wrap.style.setProperty('--pointer-from-left', `${percentX / 100}`);
-    wrap.style.setProperty('--rotate-x', `${round(-(centerX / 5))}deg`);
-    wrap.style.setProperty('--rotate-y', `${round(centerY / 4)}deg`);
+    wrap.style.setProperty('--rotate-x', `${round(-(centerX / 3.4))}deg`);
+    wrap.style.setProperty('--rotate-y', `${round(centerY / 2.9)}deg`);
   }
 
-  function step() {
-    if (!running) return;
-    currentX += (targetX - currentX) * 0.12;
-    currentY += (targetY - currentY) * 0.12;
+  function renderLoop(time) {
+    requestAnimationFrame(renderLoop);
+    const t = time * 0.001;
+
+    if (!isHovered) {
+      const w = shell.clientWidth || 360;
+      const h = shell.clientHeight || 520;
+      targetX = w / 2 + Math.sin(t * 1.5) * 18;
+      targetY = h / 2 + Math.cos(t * 1.2) * 14;
+    }
+
+    currentX += (targetX - currentX) * 0.14;
+    currentY += (targetY - currentY) * 0.14;
 
     setVarsFromXY(currentX, currentY);
-
-    if (Math.abs(targetX - currentX) > 0.05 || Math.abs(targetY - currentY) > 0.05) {
-      rafId = requestAnimationFrame(step);
-    } else {
-      running = false;
-    }
-  }
-
-  function start() {
-    if (running) return;
-    running = true;
-    rafId = requestAnimationFrame(step);
   }
 
   shell.addEventListener('pointermove', e => {
+    isHovered = true;
     const rect = shell.getBoundingClientRect();
     targetX = e.clientX - rect.left;
     targetY = e.clientY - rect.top;
-    start();
   });
 
   shell.addEventListener('pointerenter', e => {
+    isHovered = true;
     shell.classList.add('active');
     const rect = shell.getBoundingClientRect();
     targetX = e.clientX - rect.left;
     targetY = e.clientY - rect.top;
-    start();
   });
 
   shell.addEventListener('pointerleave', () => {
-    targetX = shell.clientWidth / 2;
-    targetY = shell.clientHeight / 2;
-    start();
+    isHovered = false;
     setTimeout(() => {
       shell.classList.remove('active');
     }, 400);
   });
 
-  const contactBtn = document.getElementById('pc-contact-trigger');
-  if (contactBtn) {
-    contactBtn.addEventListener('click', e => {
-      e.preventDefault();
-      const contactSec = document.getElementById('contact');
-      if (contactSec) {
-        contactSec.scrollIntoView({ behavior: 'smooth' });
-      }
-    });
-  }
+  requestAnimationFrame(renderLoop);
 }
 
 

@@ -1902,9 +1902,9 @@ ul { list-style: none; }
   --rotate-y: 0deg;
   --background-x: 50%;
   --background-y: 50%;
-  --behind-glow-color: rgba(146, 129, 247, 0.22);
-  --behind-glow-size: 35%;
-  --inner-gradient: linear-gradient(145deg, rgba(25, 20, 38, 0.5) 0%, rgba(35, 45, 70, 0.25) 100%);
+  --behind-glow-color: rgba(146, 129, 247, 0.38);
+  --behind-glow-size: 40%;
+  --inner-gradient: linear-gradient(145deg, rgba(45, 32, 65, 0.55) 0%, rgba(55, 95, 140, 0.3) 100%);
   --sunpillar-1: hsl(2, 100%, 73%);
   --sunpillar-2: hsl(53, 100%, 69%);
   --sunpillar-3: hsl(93, 100%, 69%);
@@ -1940,8 +1940,8 @@ ul { list-style: none; }
     var(--behind-glow-color) 0%,
     transparent var(--behind-glow-size)
   );
-  filter: blur(40px);
-  opacity: calc(0.3 * var(--card-opacity));
+  filter: blur(45px);
+  opacity: calc(0.5 * var(--card-opacity));
   transition: opacity 200ms ease;
 }
 
@@ -1958,11 +1958,11 @@ ul { list-style: none; }
   border-radius: var(--card-radius);
   position: relative;
   background-blend-mode: normal;
-  box-shadow: rgba(0, 0, 0, 0.5) calc((var(--pointer-from-left) * 10px) - 3px)
+  box-shadow: rgba(0, 0, 0, 0.55) calc((var(--pointer-from-left) * 10px) - 3px)
     calc((var(--pointer-from-top) * 20px) - 6px) 25px -5px;
   transition: transform 1s ease;
   transform: translateZ(0) rotateX(0deg) rotateY(0deg);
-  background: rgba(12, 10, 18, 0.96);
+  background: rgba(12, 10, 18, 0.95);
   border: 1px solid var(--border);
   backface-visibility: hidden;
   overflow: hidden;
@@ -1995,16 +1995,16 @@ ul { list-style: none; }
   inset: 0;
   position: absolute;
   background-image: var(--inner-gradient);
-  background-color: rgba(12, 10, 18, 0.95);
+  background-color: rgba(12, 10, 18, 0.94);
   transform: none;
 }
 
 .pc-shine {
   transition: filter 0.8s ease;
-  filter: brightness(0.3) contrast(1.1) opacity(0.12);
+  filter: brightness(0.48) contrast(1.2) opacity(0.25);
   animation: holo-bg 18s linear infinite;
   animation-play-state: running;
-  mix-blend-mode: soft-light;
+  mix-blend-mode: color-dodge;
 }
 
 .pc-shine,
@@ -2067,7 +2067,7 @@ ul { list-style: none; }
 
 .pc-card:hover .pc-shine,
 .pc-card.active .pc-shine {
-  filter: brightness(0.4) contrast(1.1) opacity(0.2);
+  filter: brightness(0.6) contrast(1.2) opacity(0.32);
   animation-play-state: paused;
 }
 
@@ -2075,7 +2075,7 @@ ul { list-style: none; }
 .pc-card.active .pc-shine::before,
 .pc-card:hover .pc-shine::after,
 .pc-card.active .pc-shine::after {
-  opacity: 0.3;
+  opacity: 0.5;
 }
 
 .pc-shine::before {
@@ -2097,7 +2097,7 @@ ul { list-style: none; }
     var(--pointer-x) var(--pointer-y),
     center;
   background-blend-mode: color-dodge;
-  filter: brightness(calc(1.2 - var(--pointer-from-center) * 0.2)) contrast(1.1);
+  filter: brightness(calc(1.4 - var(--pointer-from-center) * 0.2)) contrast(1.15);
   mix-blend-mode: soft-light;
 }
 
@@ -2111,7 +2111,7 @@ ul { list-style: none; }
     700% 700%,
     100% 100%;
   mix-blend-mode: difference;
-  filter: brightness(0.4) contrast(1.1);
+  filter: brightness(0.5) contrast(1.15);
 }
 
 .pc-glare {
@@ -2119,12 +2119,12 @@ ul { list-style: none; }
   overflow: hidden;
   background-image: radial-gradient(
     farthest-corner circle at var(--pointer-x) var(--pointer-y),
-    hsla(248, 25%, 80%, 0.15) 12%,
+    hsla(248, 25%, 80%, 0.22) 12%,
     transparent 80%
   );
   mix-blend-mode: overlay;
-  filter: brightness(0.4) contrast(1.0);
-  opacity: 0.15;
+  filter: brightness(0.6) contrast(1.1);
+  opacity: 0.22;
   z-index: 4;
 }
 
