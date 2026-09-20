@@ -422,6 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
   applyTheme(currentTheme);
   applyLang(currentLang, true);
   initNavbar();
+  initDock();
   initLangSelector();
   initThemeToggle();
   initLikeButton();
@@ -597,7 +598,8 @@ function initLangSelector() {
    ──────────────────────────────────────────────────────────────── */
 function initNavbar() {
   const hamburger = document.getElementById('hamburger');
-  const navLinks = document.getElementById('nav-links');
+  const navLinks = document.getElementById('nav-dock') || document.getElementById('nav-links');
+  if (!hamburger || !navLinks) return;
 
   hamburger.addEventListener('click', () => {
     const open = hamburger.classList.toggle('open');
@@ -1107,3 +1109,56 @@ function initBorderGlow() {
     });
   });
 }
+
+/* ────────────────────────────────────────────────────────────────
+   DOCK COMPONENT (React Bits - Spring Magnification Effect)
+   ──────────────────────────────────────────────────────────────── */
+function initDock() {
+  const dockPanel = document.getElementById('nav-dock');
+  if (!dockPanel) return;
+
+  const items = dockPanel.querySelectorAll('.dock-item');
+  if (!items.length) return;
+
+  const baseSize = 38;
+  const magnification = 54;
+  const distance = 140;
+
+  function resetSizes() {
+    items.forEach(item => {
+      if (window.innerWidth > 768) {
+        item.style.width = `${baseSize}px`;
+        item.style.height = `${baseSize}px`;
+      } else {
+        item.style.width = '';
+        item.style.height = '';
+      }
+    });
+  }
+
+  dockPanel.addEventListener('mousemove', e => {
+    if (window.innerWidth <= 768) return;
+
+    const mouseX = e.clientX;
+
+    items.forEach(item => {
+      const rect = item.getBoundingClientRect();
+      const itemCenterX = rect.left + rect.width / 2;
+      const dx = Math.abs(mouseX - itemCenterX);
+
+      if (dx < distance) {
+        const factor = 1 - dx / distance;
+        const size = Math.round(baseSize + (magnification - baseSize) * (factor * factor));
+        item.style.width = `${size}px`;
+        item.style.height = `${size}px`;
+      } else {
+        item.style.width = `${baseSize}px`;
+        item.style.height = `${baseSize}px`;
+      }
+    });
+  });
+
+  dockPanel.addEventListener('mouseleave', resetSizes);
+  window.addEventListener('resize', resetSizes);
+}
+

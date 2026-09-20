@@ -308,22 +308,93 @@ ul { list-style: none; }
 
 .nav-logo { display: flex; align-items: center; flex-shrink: 0; }
 
-/* Desktop nav links */
-.nav-links {
+/* Desktop nav links — React Bits Dock Component */
+.dock-outer {
   display: flex;
   align-items: center;
-  gap: 0.125rem;
+  justify-content: center;
 }
 
-.nav-links a {
-  padding: 0.4rem 0.75rem;
-  border-radius: var(--r-sm);
-  font-size: 14px;
-  font-weight: 400;
-  color: var(--text-3);
-  transition: color var(--t-fast), background var(--t-fast);
+.dock-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 9999px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 0.25rem 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  position: relative;
+  transition: background var(--t-slow), border-color var(--t-slow);
 }
-.nav-links a:hover { color: var(--text-1); background: var(--btn-bg-h); }
+
+.dock-item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background-color: var(--bg-1);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  outline: none;
+  width: 38px;
+  height: 38px;
+  text-decoration: none;
+  color: var(--text-2);
+  transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast), transform 0.15s ease-out;
+  will-change: width, height;
+}
+
+.dock-item:hover,
+.dock-item:focus-visible {
+  background-color: var(--btn-bg-h);
+  border-color: var(--btn-border-h);
+  color: var(--text-1);
+}
+
+.dock-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.dock-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+}
+
+.dock-label {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  width: fit-content;
+  white-space: nowrap;
+  border-radius: 0.375rem;
+  border: 1px solid var(--border);
+  background-color: var(--bg-card);
+  padding: 0.2rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-1);
+  box-shadow: var(--shadow-card);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 1000;
+}
+
+.dock-item:hover .dock-label,
+.dock-item:focus-visible .dock-label {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 
 /* Actions group */
 .nav-actions { display: flex; align-items: center; gap: 0.5rem; }
@@ -1371,6 +1442,7 @@ ul { list-style: none; }
   :root { --section-py: 64px; }
 
   /* Nav mobile */
+  .dock-panel,
   .nav-links {
     display: none;
     position: absolute;
@@ -1378,14 +1450,41 @@ ul { list-style: none; }
     left: 0; right: 0;
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px;
+    gap: 6px;
     background: var(--nav-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
     padding: var(--spacing-16) var(--container-px) var(--spacing-20);
+    border-radius: 0;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
   }
+  .dock-panel.open,
   .nav-links.open { display: flex; }
+  .dock-panel .dock-item {
+    width: 100% !important;
+    height: 42px !important;
+    justify-content: flex-start;
+    padding: 0 12px;
+    gap: 10px;
+    border-radius: var(--r-sm);
+  }
+  .dock-panel .dock-label {
+    position: static;
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-size: 14px;
+    color: var(--text-2);
+    box-shadow: none;
+  }
+  .dock-panel .dock-item:hover .dock-label {
+    color: var(--text-1);
+    transform: none;
+  }
   .nav-links a { width: 100%; padding: 10px 12px; }
   .hamburger { display: flex; }
 
