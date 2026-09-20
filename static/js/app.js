@@ -437,7 +437,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initThemeToggle();
   initLikeButton();
   initDepthText();
-  initDepthImage();
+  initGlobe();
   initBorderGlow();
   initProfileCard();
   initScrollReveal();
@@ -1594,70 +1594,339 @@ function initDepthText() {
 }
 
 /* ────────────────────────────────────────────────────────────────
-   REACT BITS PRO: DEPTH IMAGE (Relighting & Height Parallax)
+   REACT BITS PRO: GLOBE (Interactive 3D Globe with Arcs & Markers)
    ──────────────────────────────────────────────────────────────── */
-function initDepthImage() {
-  const container = document.getElementById('depth-image-container');
-  const card = document.getElementById('depth-image-card');
-  const light = document.getElementById('depth-image-light');
-  if (!container || !card || !light) return;
+function initGlobe() {
+  const canvas = document.getElementById('globe-canvas');
+  if (!canvas) return;
 
-  let isHovered = false;
-  let targetRotateX = 0;
-  let targetRotateY = 0;
-  let currRotateX = 0;
-  let currRotateY = 0;
+  const ctx = canvas.getContext('2d');
 
-  const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
+  /* ── Size ─── */
+  function resize() {
+    const container = canvas.parentElement;
+    const size = Math.min(container.clientWidth, 480);
+    canvas.width = size * devicePixelRatio;
+    canvas.height = size * devicePixelRatio;
+    canvas.style.width = size + 'px';
+    canvas.style.height = size + 'px';
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+  }
+  resize();
+  window.addEventListener('resize', () => { ctx.setTransform(1,0,0,1,0,0); resize(); });
 
-  container.addEventListener('pointermove', e => {
-    isHovered = true;
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+  /* ── Cities (lat, lon) ─── */
+  const cities = [
+    { lat: 40.7128,  lon: -74.006,  label: 'New York'      },
+    { lat: 51.5074,  lon:  -0.1278, label: 'London'        },
+    { lat: 35.6762,  lon: 139.6503, label: 'Tokyo'         },
+    { lat: 19.4326,  lon: -99.1332, label: 'Mexico City'   },
+    { lat: -23.5505, lon: -46.6333, label: 'São Paulo'     },
+    { lat: 48.8566,  lon:   2.3522, label: 'Paris'         },
+    { lat:  1.3521,  lon: 103.8198, label: 'Singapore'     },
+    { lat: 25.2048,  lon:  55.2708, label: 'Dubai'         },
+    { lat: 37.7749,  lon: -122.419, label: 'San Francisco' },
+    { lat: -33.8688, lon: 151.2093, label: 'Sydney'        },
+    { lat: 55.7558,  lon:  37.6176, label: 'Moscow'        },
+    { lat: 28.6139,  lon:  77.209,  label: 'New Delhi'     },
+  ];
 
-    const percentX = (x / rect.width) * 100;
-    const percentY = (y / rect.height) * 100;
+  /* ── Arcs between random city pairs ─── */
+  const arcPairs = [
+    [0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7],[7,8],[8,9],[9,10],[10,11],[11,0],
+    [0,5],[1,7],[2,9],[3,10],[4,6],[5,8]
+  ];
 
-    light.style.setProperty('--mouse-x', `${percentX}%`);
-    light.style.setProperty('--mouse-y', `${percentY}%`);
+  /* ── State ─── */
+  let rotY = 0;        // longitude rotation (radians)
+  let rotX = 0.3;      // tilt (radians)
+  let targetRotY = 0;
+  let targetRotX = 0.3;
+  let isDragging = false;
+  let lastMX = 0, lastMY = 0;
+  let velX = 0, velY = 0;
+  let autoSpin = true;
 
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    const normX = clamp((x - centerX) / centerX, -1, 1);
-    const normY = clamp((y - centerY) / centerY, -1, 1);
+  /* ── Arc animation progress (each arc has its own phase) ─── */
+  const arcStates = arcPairs.map((_, i) => ({ progress: (i / arcPairs.length), speed: 0.0015 + Math.random() * 0.001 }));
 
-    targetRotateX = -normY * 12;
-    targetRotateY = normX * 14;
-  });
-
-  container.addEventListener('pointerleave', () => {
-    isHovered = false;
-    targetRotateX = 0;
-    targetRotateY = 0;
-  });
-
-  let startTime = performance.now();
-
-  function animate(now) {
-    if (!isHovered) {
-      const elapsed = (now - startTime) / 1000;
-      targetRotateX = Math.sin(elapsed * 1.2) * 3;
-      targetRotateY = Math.cos(elapsed * 0.9) * 4;
-      const lx = 50 + Math.sin(elapsed * 1.5) * 30;
-      const ly = 50 + Math.cos(elapsed * 1.1) * 25;
-      light.style.setProperty('--mouse-x', `${lx}%`);
-      light.style.setProperty('--mouse-y', `${ly}%`);
-    }
-
-    currRotateX += (targetRotateX - currRotateX) * 0.1;
-    currRotateY += (targetRotateY - currRotateY) * 0.1;
-
-    card.style.transform = `perspective(1000px) rotateX(${currRotateX.toFixed(2)}deg) rotateY(${currRotateY.toFixed(2)}deg)`;
-    requestAnimationFrame(animate);
+  /* ── 3D math helpers ─── */
+  function latLonToXYZ(lat, lon) {
+    const phi   = (90 - lat) * (Math.PI / 180);
+    const theta = (lon + 180) * (Math.PI / 180);
+    return {
+      x: -Math.sin(phi) * Math.cos(theta),
+      y:  Math.cos(phi),
+      z:  Math.sin(phi) * Math.sin(theta),
+    };
   }
 
-  requestAnimationFrame(animate);
+  function applyRotation(p) {
+    // Rotate Y (longitude spin)
+    let x1 = p.x * Math.cos(rotY) + p.z * Math.sin(rotY);
+    let z1 = -p.x * Math.sin(rotY) + p.z * Math.cos(rotY);
+    // Rotate X (tilt)
+    let y2 = p.y * Math.cos(rotX) - z1 * Math.sin(rotX);
+    let z2 = p.y * Math.sin(rotX) + z1 * Math.cos(rotX);
+    return { x: x1, y: y2, z: z2 };
+  }
+
+  function project(p, cx, cy, R) {
+    const scale = R / (1.6 - p.z * 0.4);
+    return {
+      sx: cx + p.x * scale,
+      sy: cy - p.y * scale,
+      visible: p.z > -0.1,
+    };
+  }
+
+  function slerp(a, b, t) {
+    const dot = a.x*b.x + a.y*b.y + a.z*b.z;
+    const clamped = Math.max(-1, Math.min(1, dot));
+    const omega = Math.acos(clamped);
+    if (Math.abs(omega) < 0.001) return a;
+    const s = Math.sin(omega);
+    return {
+      x: (Math.sin((1-t)*omega)/s)*a.x + (Math.sin(t*omega)/s)*b.x,
+      y: (Math.sin((1-t)*omega)/s)*a.y + (Math.sin(t*omega)/s)*b.y,
+      z: (Math.sin((1-t)*omega)/s)*a.z + (Math.sin(t*omega)/s)*b.z,
+    };
+  }
+
+  /* ── Drag ─── */
+  canvas.addEventListener('pointerdown', e => {
+    isDragging = true;
+    autoSpin = false;
+    lastMX = e.clientX;
+    lastMY = e.clientY;
+    velX = 0; velY = 0;
+    canvas.setPointerCapture(e.pointerId);
+  });
+
+  canvas.addEventListener('pointermove', e => {
+    if (!isDragging) return;
+    const dx = e.clientX - lastMX;
+    const dy = e.clientY - lastMY;
+    velY = dx * 0.006;
+    velX = dy * 0.004;
+    targetRotY += dx * 0.006;
+    targetRotX += dy * 0.004;
+    targetRotX = Math.max(-1.2, Math.min(1.2, targetRotX));
+    lastMX = e.clientX;
+    lastMY = e.clientY;
+  });
+
+  canvas.addEventListener('pointerup', () => { isDragging = false; });
+  canvas.addEventListener('pointercancel', () => { isDragging = false; });
+
+  /* ── Render ─── */
+  function getColors() {
+    const dark = document.documentElement.getAttribute('data-theme') !== 'light';
+    return {
+      ocean:      dark ? '#0a0818' : '#dce8ff',
+      sphere:     dark ? 'rgba(14,8,35,0.85)' : 'rgba(220,232,255,0.7)',
+      gridLine:   dark ? 'rgba(140,90,255,0.12)' : 'rgba(80,60,180,0.10)',
+      dotFill:    dark ? 'rgba(200,170,255,0.7)' : 'rgba(100,70,200,0.7)',
+      dotGlow:    dark ? 'rgba(180,130,255,0.45)' : 'rgba(80,50,200,0.3)',
+      arcStart:   dark ? 'rgba(160,90,255,0)' : 'rgba(80,40,200,0)',
+      arcMid:     dark ? 'rgba(190,120,255,0.9)' : 'rgba(100,60,220,0.8)',
+      arcEnd:     dark ? 'rgba(100,200,255,0)' : 'rgba(60,120,255,0)',
+      markerOuter:dark ? 'rgba(200,150,255,0.25)' : 'rgba(100,80,220,0.2)',
+      markerInner:dark ? '#c084fc' : '#7c3aed',
+      glow:       dark ? 'rgba(140,60,255,0.18)' : 'rgba(100,60,200,0.12)',
+      atmosphere: dark
+        ? ['rgba(130,60,255,0.0)', 'rgba(130,60,255,0.18)', 'rgba(80,30,200,0.0)']
+        : ['rgba(100,60,200,0.0)', 'rgba(100,60,200,0.12)', 'rgba(60,30,180,0.0)'],
+    };
+  }
+
+  function drawFrame(now) {
+    const W = canvas.width / devicePixelRatio;
+    const H = canvas.height / devicePixelRatio;
+    const cx = W / 2, cy = H / 2;
+    const R = W * 0.38;
+    const C = getColors();
+
+    ctx.clearRect(0, 0, W, H);
+
+    /* Outer glow */
+    const glow = ctx.createRadialGradient(cx, cy, R * 0.6, cx, cy, R * 1.4);
+    glow.addColorStop(0, C.glow);
+    glow.addColorStop(1, 'transparent');
+    ctx.beginPath();
+    ctx.arc(cx, cy, R * 1.4, 0, Math.PI * 2);
+    ctx.fillStyle = glow;
+    ctx.fill();
+
+    /* Sphere fill */
+    const sphereGrad = ctx.createRadialGradient(cx - R*0.25, cy - R*0.25, R*0.05, cx, cy, R);
+    sphereGrad.addColorStop(0, C.sphere);
+    sphereGrad.addColorStop(1, C.ocean);
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.fillStyle = sphereGrad;
+    ctx.fill();
+
+    /* Grid lines (lat/lon) */
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.clip();
+
+    const gridSteps = 18;
+    for (let i = 0; i <= gridSteps; i++) {
+      const lat = -90 + i * (180 / gridSteps);
+      ctx.beginPath();
+      let first = true;
+      for (let j = 0; j <= 72; j++) {
+        const lon = -180 + j * 5;
+        const p3d = applyRotation(latLonToXYZ(lat, lon));
+        const { sx, sy } = project(p3d, cx, cy, R);
+        first ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy);
+        first = false;
+      }
+      ctx.strokeStyle = C.gridLine;
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    }
+    for (let j = 0; j < 36; j++) {
+      const lon = -180 + j * 10;
+      ctx.beginPath();
+      let first = true;
+      for (let i = 0; i <= 36; i++) {
+        const lat = -90 + i * 5;
+        const p3d = applyRotation(latLonToXYZ(lat, lon));
+        const { sx, sy } = project(p3d, cx, cy, R);
+        first ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy);
+        first = false;
+      }
+      ctx.strokeStyle = C.gridLine;
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    /* Arcs */
+    arcPairs.forEach(([ai, bi], idx) => {
+      const state = arcStates[idx];
+      state.progress = (state.progress + state.speed) % 1;
+      const p = state.progress;
+
+      const a3d = latLonToXYZ(cities[ai].lat, cities[ai].lon);
+      const b3d = latLonToXYZ(cities[bi].lat, cities[bi].lon);
+
+      const tailLen = 0.28;
+      const headT = p;
+      const tailT = Math.max(0, p - tailLen);
+
+      const segments = 48;
+      ctx.beginPath();
+      let started = false;
+      for (let s = 0; s <= segments; s++) {
+        const t = tailT + (headT - tailT) * (s / segments);
+        const pt3 = slerp(a3d, b3d, t);
+        const rpt = applyRotation(pt3);
+        const { sx, sy, visible } = project(rpt, cx, cy, R * 1.04);
+        if (!visible) { started = false; continue; }
+        started ? ctx.lineTo(sx, sy) : ctx.moveTo(sx, sy);
+        started = true;
+      }
+
+      const grad = ctx.createLinearGradient(
+        cx + applyRotation(slerp(a3d, b3d, tailT)).x * R,
+        cy - applyRotation(slerp(a3d, b3d, tailT)).y * R,
+        cx + applyRotation(slerp(a3d, b3d, headT)).x * R,
+        cy - applyRotation(slerp(a3d, b3d, headT)).y * R,
+      );
+      grad.addColorStop(0, C.arcStart);
+      grad.addColorStop(0.5, C.arcMid);
+      grad.addColorStop(1, C.arcEnd);
+
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      /* Arc head dot */
+      const headPt = applyRotation(slerp(a3d, b3d, headT));
+      if (headPt.z > -0.1) {
+        const { sx, sy } = project(headPt, cx, cy, R * 1.04);
+        ctx.beginPath();
+        ctx.arc(sx, sy, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = C.arcMid;
+        ctx.fill();
+      }
+    });
+
+    /* City markers */
+    cities.forEach(city => {
+      const p3d = applyRotation(latLonToXYZ(city.lat, city.lon));
+      if (p3d.z < 0.05) return;
+      const { sx, sy } = project(p3d, cx, cy, R);
+
+      /* Outer pulse ring */
+      const pulse = 0.5 + 0.5 * Math.sin(now * 0.002 + city.lat);
+      ctx.beginPath();
+      ctx.arc(sx, sy, 6 + pulse * 4, 0, Math.PI * 2);
+      ctx.strokeStyle = C.markerOuter;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      /* Inner dot */
+      ctx.beginPath();
+      ctx.arc(sx, sy, 3, 0, Math.PI * 2);
+      ctx.fillStyle = C.markerInner;
+      ctx.fill();
+
+      /* Glow behind dot */
+      const dotGlow = ctx.createRadialGradient(sx, sy, 0, sx, sy, 10);
+      dotGlow.addColorStop(0, C.dotGlow);
+      dotGlow.addColorStop(1, 'transparent');
+      ctx.beginPath();
+      ctx.arc(sx, sy, 10, 0, Math.PI * 2);
+      ctx.fillStyle = dotGlow;
+      ctx.fill();
+    });
+
+    /* Atmosphere rim */
+    const atm = ctx.createRadialGradient(cx, cy, R * 0.85, cx, cy, R * 1.12);
+    atm.addColorStop(0, C.atmosphere[0]);
+    atm.addColorStop(0.5, C.atmosphere[1]);
+    atm.addColorStop(1, C.atmosphere[2]);
+    ctx.beginPath();
+    ctx.arc(cx, cy, R * 1.12, 0, Math.PI * 2);
+    ctx.fillStyle = atm;
+    ctx.fill();
+
+    /* Specular highlight */
+    const specular = ctx.createRadialGradient(cx - R*0.3, cy - R*0.35, 0, cx - R*0.1, cy - R*0.1, R*0.7);
+    specular.addColorStop(0, 'rgba(255,255,255,0.08)');
+    specular.addColorStop(1, 'transparent');
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.fillStyle = specular;
+    ctx.fill();
+
+    /* Rotation update */
+    if (!isDragging) {
+      if (autoSpin) {
+        targetRotY += 0.003;
+      } else {
+        velX *= 0.94;
+        velY *= 0.94;
+        targetRotY += velY;
+        targetRotX += velX;
+        if (Math.abs(velX) < 0.0001 && Math.abs(velY) < 0.0001) autoSpin = true;
+      }
+      targetRotX = Math.max(-1.2, Math.min(1.2, targetRotX));
+    }
+
+    rotY += (targetRotY - rotY) * 0.08;
+    rotX += (targetRotX - rotX) * 0.08;
+
+    requestAnimationFrame(drawFrame);
+  }
+
+  requestAnimationFrame(drawFrame);
 }
 
 

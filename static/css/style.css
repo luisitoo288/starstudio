@@ -2454,4 +2454,70 @@ ul { list-style: none; }
   backdrop-filter: blur(8px);
 }
 
+/* ════════════════════════════════════════════════════════════
+   REACT BITS PRO: GLOBE COMPONENT
+   ════════════════════════════════════════════════════════════ */
+.globe-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.globe-canvas {
+  display: block;
+  width: 100%;
+  border-radius: 50%;
+  cursor: grab;
+  transition: filter 0.3s ease;
+  filter: drop-shadow(0 0 40px rgba(140, 60, 255, 0.25));
+}
+
+.globe-canvas:active {
+  cursor: grabbing;
+}
+
+.globe-canvas:hover {
+  filter: drop-shadow(0 0 55px rgba(140, 60, 255, 0.45));
+}
+
+[data-theme="light"] .globe-canvas {
+  filter: drop-shadow(0 0 40px rgba(100, 60, 200, 0.2));
+}
+[data-theme="light"] .globe-canvas:hover {
+  filter: drop-shadow(0 0 55px rgba(100, 60, 200, 0.35));
+}
+
+.globe-badge {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  color: var(--text-3, #a1a1aa);
+  letter-spacing: 0.05em;
+  backdrop-filter: blur(8px);
+  animation: globe-badge-pulse 3s ease-in-out infinite;
+}
+
+@keyframes globe-badge-pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .globe-container {
+    max-width: 320px;
+  }
+}
+
+
 

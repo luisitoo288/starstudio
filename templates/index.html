@@ -220,31 +220,12 @@
         </div>
       </div>
 
-      <!-- Visual — Interactive Depth Image Component (React Bits Pro) -->
-      <div class="hero-visual reveal" aria-label="Visual interactivo Star Studio's">
-        <div class="depth-image-container" id="depth-image-container">
-          <div class="depth-image-card" id="depth-image-card">
-            <div class="depth-image-light" id="depth-image-light"></div>
-            <img
-              src="{{ url_for('static', filename='images/logo.png') }}"
-              alt="Star Studio's Branding Depth Visual"
-              class="depth-image-img dark-logo"
-              id="depth-img-dark"
-              draggable="false"
-              oncontextmenu="return false;"
-            />
-            <img
-              src="{{ url_for('static', filename='images/logo2.png') }}"
-              alt="Star Studio's Branding Depth Visual"
-              class="depth-image-img light-logo"
-              id="depth-img-light"
-              draggable="false"
-              oncontextmenu="return false;"
-            />
-            <div class="depth-image-overlay"></div>
-          </div>
-          <div class="depth-image-badge">
-            <span>✦</span> Star Studio's Depth View
+      <!-- Visual — Interactive 3D Globe Component (React Bits Pro) -->
+      <div class="hero-visual reveal" aria-label="Globo interactivo Star Studio's">
+        <div class="globe-container" id="globe-container">
+          <canvas class="globe-canvas" id="globe-canvas" aria-label="Globo 3D interactivo"></canvas>
+          <div class="globe-badge">
+            <span>✦</span> Global Reach
           </div>
         </div>
       </div>
