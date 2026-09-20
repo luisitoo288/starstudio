@@ -436,6 +436,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initLangSelector();
   initThemeToggle();
   initLikeButton();
+  initDepthText();
+  initDepthImage();
   initBorderGlow();
   initProfileCard();
   initScrollReveal();
@@ -1484,6 +1486,180 @@ function initProfileCard() {
 
   requestAnimationFrame(renderLoop);
 }
+
+/* ────────────────────────────────────────────────────────────────
+   REACT BITS: DEPTH TEXT (3D Extruded Title)
+   ──────────────────────────────────────────────────────────────── */
+function initDepthText() {
+  const wrapper = document.getElementById('depth-text-wrapper');
+  const stage = document.getElementById('hero-depth-stage');
+  if (!wrapper || !stage) return;
+
+  const text = "Star Studio's";
+  const layersCount = 30;
+  const depthVal = 2.4;
+  const tilt = 7.5;
+  const smoothing = 0.14;
+  const autoOrbit = true;
+  const orbitSpeed = 0.35;
+  const perspective = 900;
+  const shadow = true;
+
+  function getFaceColor() {
+    return currentTheme === 'light' ? '#0f172a' : '#f8fafc';
+  }
+  const depthColor = '#7c3aed';
+
+  function renderLayers() {
+    let html = '';
+    const faceCol = getFaceColor();
+    for (let i = layersCount; i >= 1; i--) {
+      const progress = layersCount <= 1 ? 1 : i / layersCount;
+      const eased = progress * progress;
+      const faceMix = Math.round((1 - eased) * 72 + 4);
+      const layerColor = `color-mix(in srgb, ${faceCol} ${faceMix}%, ${depthColor})`;
+      const transform = `translateZ(${-i * depthVal}px)`;
+      html += `<span aria-hidden="true" class="depth-text__layer" style="color: ${layerColor}; transform: ${transform};">${text}</span>`;
+    }
+    html += `<span class="depth-text__face">${text}</span>`;
+    stage.innerHTML = html;
+  }
+
+  renderLayers();
+
+  // Update face colors on theme toggle
+  const themeToggle = document.getElementById('theme-toggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      setTimeout(renderLayers, 50);
+    });
+  }
+
+  wrapper.style.setProperty('--depth-text-perspective', `${perspective}px`);
+  if (shadow) {
+    wrapper.style.setProperty(
+      '--depth-text-shadow',
+      `0 22px 34px color-mix(in srgb, ${depthColor} 36%, transparent), 0 4px 8px rgba(0, 0, 0, 0.28)`
+    );
+  }
+
+  const baseRotation = { x: -tilt * 0.32, y: tilt * 0.42 };
+  const current = { ...baseRotation };
+  const target = { ...baseRotation };
+  let activePointer = false;
+  let startTime = performance.now();
+
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  const handlePointerMove = event => {
+    const rect = wrapper.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+
+    activePointer = true;
+    const clampVal = (val, min, max) => Math.min(Math.max(val, min), max);
+    const x = clampVal((event.clientX - (rect.left + rect.width / 2)) / (rect.width * 0.8), -1, 1);
+    const y = clampVal((event.clientY - (rect.top + rect.height / 2)) / (rect.height * 0.8), -1, 1);
+
+    target.x = baseRotation.x - y * tilt;
+    target.y = baseRotation.y + x * tilt;
+  };
+
+  const handlePointerLeave = () => {
+    activePointer = false;
+    target.x = baseRotation.x;
+    target.y = baseRotation.y;
+  };
+
+  if (finePointer) {
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerleave', handlePointerLeave);
+  }
+
+  function tick(now) {
+    if (!activePointer && autoOrbit) {
+      const elapsed = (now - startTime) / 1000;
+      const orbit = elapsed * orbitSpeed * Math.PI * 2;
+      const fallbackAmount = finePointer ? 0.25 : 0.5;
+      target.x = baseRotation.x + Math.sin(orbit) * tilt * fallbackAmount;
+      target.y = baseRotation.y + Math.cos(orbit * 0.85) * tilt * fallbackAmount;
+    }
+
+    current.x += (target.x - current.x) * smoothing;
+    current.y += (target.y - current.y) * smoothing;
+    stage.style.transform = `rotateX(${current.x.toFixed(3)}deg) rotateY(${current.y.toFixed(3)}deg)`;
+    requestAnimationFrame(tick);
+  }
+
+  requestAnimationFrame(tick);
+}
+
+/* ────────────────────────────────────────────────────────────────
+   REACT BITS PRO: DEPTH IMAGE (Relighting & Height Parallax)
+   ──────────────────────────────────────────────────────────────── */
+function initDepthImage() {
+  const container = document.getElementById('depth-image-container');
+  const card = document.getElementById('depth-image-card');
+  const light = document.getElementById('depth-image-light');
+  if (!container || !card || !light) return;
+
+  let isHovered = false;
+  let targetRotateX = 0;
+  let targetRotateY = 0;
+  let currRotateX = 0;
+  let currRotateY = 0;
+
+  const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
+
+  container.addEventListener('pointermove', e => {
+    isHovered = true;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const percentX = (x / rect.width) * 100;
+    const percentY = (y / rect.height) * 100;
+
+    light.style.setProperty('--mouse-x', `${percentX}%`);
+    light.style.setProperty('--mouse-y', `${percentY}%`);
+
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const normX = clamp((x - centerX) / centerX, -1, 1);
+    const normY = clamp((y - centerY) / centerY, -1, 1);
+
+    targetRotateX = -normY * 12;
+    targetRotateY = normX * 14;
+  });
+
+  container.addEventListener('pointerleave', () => {
+    isHovered = false;
+    targetRotateX = 0;
+    targetRotateY = 0;
+  });
+
+  let startTime = performance.now();
+
+  function animate(now) {
+    if (!isHovered) {
+      const elapsed = (now - startTime) / 1000;
+      targetRotateX = Math.sin(elapsed * 1.2) * 3;
+      targetRotateY = Math.cos(elapsed * 0.9) * 4;
+      const lx = 50 + Math.sin(elapsed * 1.5) * 30;
+      const ly = 50 + Math.cos(elapsed * 1.1) * 25;
+      light.style.setProperty('--mouse-x', `${lx}%`);
+      light.style.setProperty('--mouse-y', `${ly}%`);
+    }
+
+    currRotateX += (targetRotateX - currRotateX) * 0.1;
+    currRotateY += (targetRotateY - currRotateY) * 0.1;
+
+    card.style.transform = `perspective(1000px) rotateX(${currRotateX.toFixed(2)}deg) rotateY(${currRotateY.toFixed(2)}deg)`;
+    requestAnimationFrame(animate);
+  }
+
+  requestAnimationFrame(animate);
+}
+
 
 
 
