@@ -424,6 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavbar();
   initLangSelector();
   initThemeToggle();
+  initLikeButton();
   initScrollReveal();
   initContactForm();
   initScrollTop();
@@ -913,4 +914,147 @@ function initContactForm() {
       console.log('Audio not supported or blocked');
     }
   }
+}
+
+/* ────────────────────────────────────────────────────────────────
+   PULSE HEART LIKE BUTTON (React Bits Component + SQLite Persistence)
+   ──────────────────────────────────────────────────────────────── */
+function initLikeButton() {
+  const btn = document.getElementById('pulse-like-btn');
+  const pill = document.getElementById('pulse-pill');
+  const heartIcon = document.getElementById('pulse-heart-icon');
+  const countNum = document.getElementById('pulse-count-num');
+  const countContainer = document.getElementById('pulse-count');
+  const srText = document.getElementById('pulse-sr');
+
+  if (!btn || !countContainer) return;
+
+  let isLiked = false;
+  let currentCount = 0;
+  let isRunningAnimation = false;
+
+  const formatNum = n => new Intl.NumberFormat().format(n);
+
+  function updateUI(liked, count, animateRoll = false) {
+    const prevCount = currentCount;
+    isLiked = liked;
+    currentCount = count;
+
+    btn.setAttribute('aria-pressed', liked ? 'true' : 'false');
+    if (srText) srText.textContent = `Me gusta, ${formatNum(count)}`;
+
+    if (animateRoll && prevCount !== count && countContainer) {
+      const oldStr = formatNum(prevCount);
+      const newStr = formatNum(count);
+      const isUp = count > prevCount;
+
+      countContainer.innerHTML = '';
+      const slot = document.createElement('span');
+      slot.className = 'pulse-heart__slot';
+      const roll = document.createElement('span');
+      roll.className = 'pulse-heart__roll';
+
+      const topSpan = document.createElement('span');
+      topSpan.textContent = isUp ? oldStr : newStr;
+      const bottomSpan = document.createElement('span');
+      bottomSpan.textContent = isUp ? newStr : oldStr;
+
+      roll.appendChild(topSpan);
+      roll.appendChild(bottomSpan);
+      slot.appendChild(roll);
+      countContainer.appendChild(slot);
+
+      void roll.offsetWidth;
+      roll.style.transform = isUp ? 'translateY(-1em)' : 'translateY(0)';
+
+      setTimeout(() => {
+        countContainer.innerHTML = `<span id="pulse-count-num">${newStr}</span>`;
+      }, 360);
+    } else {
+      countContainer.innerHTML = `<span id="pulse-count-num">${formatNum(count)}</span>`;
+    }
+  }
+
+  // Fetch initial likes count and status from SQLite DB
+  fetch('/api/likes')
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        updateUI(data.liked, data.count, false);
+      }
+    })
+    .catch(err => console.error('Error fetching likes:', err));
+
+  // Pulse heartbeat animation algorithm matching React Bits
+  function runHeartbeatAnimation(nextLiked, nextCount) {
+    if (isRunningAnimation) return;
+    isRunningAnimation = true;
+
+    btn.setAttribute('data-running', '');
+    const duration = 560; // ms
+    const dotSize = 0.3;
+    const overshoot = 1.7;
+    const beat = 3; // % dip
+    const OUT = 0.4; // 40% threshold for flip
+
+    const back = (k, c) => 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2);
+    const swellOf = (t, c) => (t <= 0 ? 0 : t < OUT ? 1 - Math.pow(1 - t / OUT, 3) : 1 - back((t - OUT) / (1 - OUT), c));
+
+    let t0 = performance.now();
+    let swapped = false;
+
+    function tick(now) {
+      const elapsed = now - t0;
+      const t = Math.min(1, elapsed / duration);
+      const s = swellOf(t, overshoot);
+      const k = 1 - (1 - dotSize) * s;
+
+      if (heartIcon) heartIcon.style.transform = `scale(${k})`;
+      if (pill) pill.style.transform = `scale(${1 - (beat / 100) * s})`;
+
+      if (!swapped && t >= OUT) {
+        swapped = true;
+        updateUI(nextLiked, nextCount, true);
+      }
+
+      if (t < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        if (heartIcon) heartIcon.style.transform = '';
+        if (pill) pill.style.transform = '';
+        btn.removeAttribute('data-running');
+        isRunningAnimation = false;
+      }
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  // Pointer press scaling
+  btn.addEventListener('pointerdown', e => {
+    if (e.button === 0) btn.setAttribute('data-pressed', '');
+  });
+  const releasePress = () => btn.removeAttribute('data-pressed');
+  btn.addEventListener('pointerup', releasePress);
+  btn.addEventListener('pointercancel', releasePress);
+  btn.addEventListener('pointerleave', releasePress);
+
+  // Click handler to toggle like in SQLite database
+  btn.addEventListener('click', () => {
+    const nextLiked = !isLiked;
+    const nextCount = currentCount + (nextLiked ? 1 : -1);
+
+    runHeartbeatAnimation(nextLiked, nextCount);
+
+    fetch('/api/likes', { method: 'POST' })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          updateUI(data.liked, data.count, false);
+        }
+      })
+      .catch(err => {
+        console.error('Error toggling like:', err);
+      });
+  });
 }

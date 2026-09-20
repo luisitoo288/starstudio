@@ -1419,3 +1419,162 @@ ul { list-style: none; }
   .scroll-top { bottom: 16px; right: 16px; }
   .section-header { margin-bottom: var(--spacing-40); }
 }
+
+/* ════════════════════════════════════════════════════════════
+   REACT BITS — PULSE HEART COMPONENT
+   ════════════════════════════════════════════════════════════ */
+.pulse-heart {
+  --ph-size: 32px;
+  --ph-corner: 24px;
+  --ph-pill: rgba(255,255,255,0.05);
+  --ph-idle: #8b8b93;
+  --ph-liked: #ff4d6d;
+  --ph-text: #ffffff;
+  --ph-roll: 350ms;
+  --ph-stroke: 2px;
+  --ph-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--ph-corner);
+  background: none;
+  color: var(--ph-text);
+  font-family: var(--font-mono);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  outline: none;
+  transition: transform 160ms var(--ph-ease-out), border-color var(--t-fast);
+}
+
+.pulse-heart[data-pressed] {
+  transform: scale(0.95);
+}
+
+.pulse-heart:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--ph-liked) 60%, transparent);
+  outline-offset: 3px;
+}
+
+.pulse-heart:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.pulse-heart__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--ph-corner);
+  background: var(--ph-pill);
+  transform-origin: center;
+  transition: background-color 200ms ease, transform 160ms var(--ph-ease-out);
+}
+
+.pulse-heart__heart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--ph-idle);
+  transform-origin: center;
+  transition: color 160ms ease, transform 160ms ease;
+}
+
+.pulse-heart__heart svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--ph-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: fill 200ms ease;
+}
+
+.pulse-heart[aria-pressed='true'] .pulse-heart__heart svg {
+  fill: currentColor;
+}
+
+.pulse-heart[aria-pressed='true'] .pulse-heart__heart {
+  color: var(--ph-liked);
+}
+
+.pulse-heart[aria-pressed='true'] {
+  border-color: rgba(255, 77, 109, 0.45);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pulse-heart:not([aria-pressed='true']):not(:disabled):hover {
+    border-color: rgba(255, 77, 109, 0.3);
+  }
+  .pulse-heart:not([aria-pressed='true']):not(:disabled):hover .pulse-heart__heart {
+    color: color-mix(in srgb, var(--ph-idle) 45%, var(--ph-liked));
+  }
+}
+
+.pulse-heart__count {
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.1px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ph-text);
+  overflow: hidden;
+  height: 1.2em;
+}
+
+.pulse-heart__count > span {
+  display: inline-block;
+}
+
+.pulse-heart__slot {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  height: 1em;
+}
+
+.pulse-heart__roll {
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--ph-roll) var(--ph-ease-out);
+}
+
+.pulse-heart__roll > span {
+  display: block;
+  height: 1em;
+  line-height: 1;
+}
+
+.pulse-heart__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+[data-theme="light"] .pulse-heart {
+  --ph-pill: rgba(0,0,0,0.04);
+  --ph-idle: #6e727a;
+  --ph-text: #0a0e1a;
+  border-color: #dde1ea;
+}

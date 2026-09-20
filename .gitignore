@@ -9,3 +9,5 @@ instance/
 *.egg-info/
 dist/
 build/
+*.db
+
