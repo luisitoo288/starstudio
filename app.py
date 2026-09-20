@@ -22,28 +22,62 @@ DISCORD_WEBHOOK_URL: str = os.getenv("DISCORD_WEBHOOK_URL") or DEFAULT_WEBHOOK_U
 import sqlite3
 import hashlib
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "likes.db")
+def get_db_path():
+    """Determina la ruta adecuada para la BD SQLite, adaptándose a Vercel y entornos Serverless/Read-Only."""
+    if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
+        return "/tmp/likes.db"
+    
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    if not os.access(base_dir, os.W_OK):
+        return "/tmp/likes.db"
+        
+    return os.path.join(base_dir, "likes.db")
+
+
+def get_db_connection():
+    """Obtiene una conexión a la BD SQLite con fallbacks seguros contra errores de permisos."""
+    db_path = get_db_path()
+    try:
+        conn = sqlite3.connect(db_path)
+        return conn
+    except Exception as e:
+        app.logger.error("No se pudo abrir la BD SQLite en %s: %s", db_path, e)
+        try:
+            return sqlite3.connect("/tmp/likes.db")
+        except Exception:
+            return sqlite3.connect(":memory:")
+
 
 def init_db():
     """Inicializa la base de datos SQLite para la persistencia de likes acumulados."""
-    with sqlite3.connect(DB_PATH) as conn:
-        cursor = conn.cursor()
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS likes (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                client_identifier TEXT UNIQUE NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-        cursor.execute("SELECT COUNT(*) FROM likes")
-        count = cursor.fetchone()[0]
-        if count == 0:
-            # Sembrar 124 likes iniciales de la comunidad
-            for i in range(124):
-                cursor.execute("INSERT OR IGNORE INTO likes (client_identifier) VALUES (?)", (f"seed_user_{i}",))
-        conn.commit()
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS likes (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    client_identifier TEXT UNIQUE NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            cursor.execute("SELECT COUNT(*) FROM likes")
+            row = cursor.fetchone()
+            count = row[0] if row else 0
+            if count == 0:
+                # Sembrar 124 likes iniciales de la comunidad
+                for i in range(124):
+                    cursor.execute("INSERT OR IGNORE INTO likes (client_identifier) VALUES (?)", (f"seed_user_{i}",))
+            conn.commit()
+    except Exception as e:
+        app.logger.error("Error inicializando la BD SQLite: %s", e)
 
-init_db()
+
+# Inicialización segura que no rompe la carga del servidor en caso de excepciones
+try:
+    init_db()
+except Exception as exc:
+    app.logger.error("Falló la llamada a init_db: %s", exc)
+
 
 def get_client_identifier():
     """Obtiene una clave única por persona (IP + User-Agent / Cookie)."""
@@ -53,6 +87,7 @@ def get_client_identifier():
     if not client_id:
         client_id = hashlib.sha256(f"{ip}:{user_agent}".encode("utf-8")).hexdigest()[:32]
     return client_id
+
 
 # ── Rutas ─────────────────────────────────────────────────────────────────────
 @app.route("/")
@@ -65,13 +100,19 @@ def index():
 def get_likes():
     """Obtiene el contador total acumulado de likes y si la persona actual ya dio su like."""
     client_id = get_client_identifier()
-    with sqlite3.connect(DB_PATH) as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT COUNT(*) FROM likes")
-        count = cursor.fetchone()[0]
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT COUNT(*) FROM likes")
+            row = cursor.fetchone()
+            count = row[0] if row else 124
 
-        cursor.execute("SELECT 1 FROM likes WHERE client_identifier = ?", (client_id,))
-        liked = cursor.fetchone() is not None
+            cursor.execute("SELECT 1 FROM likes WHERE client_identifier = ?", (client_id,))
+            liked = cursor.fetchone() is not None
+    except Exception as e:
+        app.logger.error("Error obteniendo likes: %s", e)
+        count = 124
+        liked = False
 
     response = jsonify({"success": True, "count": count, "liked": liked})
     response.set_cookie("ss_client_id", client_id, max_age=315360000, samesite="Lax")
@@ -82,22 +123,28 @@ def get_likes():
 def toggle_like():
     """Alterna el like de 1 persona (1 persona = 1 solo like)."""
     client_id = get_client_identifier()
-    with sqlite3.connect(DB_PATH) as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT 1 FROM likes WHERE client_identifier = ?", (client_id,))
-        already_liked = cursor.fetchone() is not None
+    new_liked = False
+    new_count = 124
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT 1 FROM likes WHERE client_identifier = ?", (client_id,))
+            already_liked = cursor.fetchone() is not None
 
-        if already_liked:
-            cursor.execute("DELETE FROM likes WHERE client_identifier = ?", (client_id,))
-            new_liked = False
-        else:
-            cursor.execute("INSERT OR IGNORE INTO likes (client_identifier) VALUES (?)", (client_id,))
-            new_liked = True
+            if already_liked:
+                cursor.execute("DELETE FROM likes WHERE client_identifier = ?", (client_id,))
+                new_liked = False
+            else:
+                cursor.execute("INSERT OR IGNORE INTO likes (client_identifier) VALUES (?)", (client_id,))
+                new_liked = True
 
-        conn.commit()
+            conn.commit()
 
-        cursor.execute("SELECT COUNT(*) FROM likes")
-        new_count = cursor.fetchone()[0]
+            cursor.execute("SELECT COUNT(*) FROM likes")
+            row = cursor.fetchone()
+            new_count = row[0] if row else 124
+    except Exception as e:
+        app.logger.error("Error al guardar/eliminar like: %s", e)
 
     response = jsonify({"success": True, "liked": new_liked, "count": new_count})
     response.set_cookie("ss_client_id", client_id, max_age=315360000, samesite="Lax")
